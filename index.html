@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VAAYU — 72-Hour Operational Atmospheric Risk Forecast</title>
+  
+  <!-- Google Fonts: EB Garamond, Inter, JetBrains Mono, Public Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..800;1,400..800&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            obs: {
+              bg: "#1e2a35",
+              panel: "#162029",
+              card: "#19242e",
+              border: "rgba(255, 255, 255, 0.1)",
+              terracotta: "#c9884f",
+              teal: "#2f6f73",
+              severe: "#8b1c2c",
+              offwhite: "#f5f5f0",
+              muted: "#a0aec0"
+            }
+          },
+          fontFamily: {
+            headline: ["EB Garamond", "serif"],
+            body: ["Inter", "sans-serif"],
+            mono: ["JetBrains Mono", "monospace"]
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      vertical-align: middle;
+    }
+    .bg-grid-obs {
+      background-size: 36px 36px;
+      background-image: 
+        linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      height: 6px;
+      width: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: #162029;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 3px;
+    }
+  </style>
+</head>
+<body class="bg-[#1e2a35] text-[#f5f5f0] font-body min-h-screen antialiased bg-grid-obs flex flex-col selection:bg-[#c9884f] selection:text-white">
+
+  <!-- Top Institutional Bar -->
+  <aside class="w-full bg-[#121b22] text-[11px] font-mono tracking-wider text-slate-300 py-1.5 px-4 md:px-8 border-b border-white/10 flex flex-wrap justify-between items-center gap-2 select-none z-50">
+    <div class="flex items-center gap-2">
+      <span class="inline-block w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+      <span class="text-slate-200 font-semibold tracking-normal font-sans">VAAYU — Atmospheric Observatory NCR</span>
+      <span class="text-white/30 hidden sm:inline">|</span>
+      <span class="text-slate-400 hidden sm:inline">Operational 72h Multi-Pollutant Forecast &amp; Replay System</span>
+    </div>
+    <div class="flex items-center gap-4 text-slate-400">
+      <div class="flex items-center gap-1.5">
+        <span class="text-amber-500/90 font-medium">BRANCH: preview/all-features</span>
+        <span class="text-white/20">•</span>
+        <span>TIMEZONE: IST (UTC+05:30)</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Primary Navigation -->
+  <header class="bg-[#162029]/95 backdrop-blur-md sticky top-0 z-40 border-b border-white/10">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-wrap justify-between items-center gap-4">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded bg-[#c9884f]/20 border border-[#c9884f]/50 flex items-center justify-center text-[#c9884f]">
+          <span class="material-symbols-outlined text-xl" style="font-variation-settings: 'FILL' 1;">cloud</span>
+        </div>
+        <div>
+          <a class="font-headline text-2xl font-bold tracking-tight text-white flex items-center gap-2" href="#">
+            VAAYU
+            <span class="text-[10px] font-mono font-normal px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">Integrated Preview</span>
+          </a>
+          <p class="text-[10px] font-mono text-slate-400">SIH 2026 · Problem Statement 26082 · MoES / NCMRWF</p>
+        </div>
+      </div>
+
+      <!-- Navigation Links -->
+      <nav class="flex items-center gap-1 sm:gap-2 text-xs font-mono">
+        <a class="px-3 py-1.5 rounded bg-[#c9884f]/20 text-[#c9884f] border border-[#c9884f]/40 font-semibold flex items-center gap-1" href="#forecast-section">
+          <span class="material-symbols-outlined text-sm">timeline</span>
+          <span>72h Forecast</span>
+        </a>
+        <a class="px-3 py-1.5 rounded hover:bg-white/5 text-slate-300 transition-colors flex items-center gap-1" href="design/stitch/overview.html" target="_blank">
+          <span class="material-symbols-outlined text-sm">science</span>
+          <span>Observatory</span>
+        </a>
+        <a class="px-3 py-1.5 rounded hover:bg-white/5 text-slate-300 transition-colors flex items-center gap-1" href="design/stitch/station_explorer.html" target="_blank">
+          <span class="material-symbols-outlined text-sm">sensors</span>
+          <span>Station Explorer</span>
+        </a>
+        <a class="px-3 py-1.5 rounded hover:bg-white/5 text-slate-300 transition-colors flex items-center gap-1" href="design/stitch/aqi_calculator.html" target="_blank">
+          <span class="material-symbols-outlined text-sm">calculate</span>
+          <span>AQI Calculator</span>
+        </a>
+        <a class="px-3 py-1.5 rounded hover:bg-white/5 text-slate-300 transition-colors flex items-center gap-1" href="design/stitch/inversion_viewer.html" target="_blank">
+          <span class="material-symbols-outlined text-sm">show_chart</span>
+          <span>Inversion Viewer</span>
+        </a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Feature Integration Summary Strip -->
+  <section class="bg-[#121a22] border-b border-white/10 px-4 py-3">
+    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3 text-xs">
+      <div class="flex items-center gap-2">
+        <span class="px-2 py-0.5 rounded text-[10px] font-mono uppercase bg-[#c9884f]/20 text-[#c9884f] border border-[#c9884f]/30">Active Features Combined</span>
+        <span class="text-slate-300 text-[11px]">3 feature branches integrated into <code class="text-amber-300 font-mono">preview/all-features</code>:</span>
+      </div>
+      <div class="flex flex-wrap items-center gap-2 font-mono text-[11px]">
+        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-[#2f6f73]/20 border border-[#2f6f73]/40 text-teal-300" title="Automated archiving, multi-winter audit, 7-day rolling bias blend">
+          <span class="material-symbols-outlined text-xs">check_circle</span>
+          <span>feat/archive-and-bias-blend</span>
+        </span>
+        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-amber-500/20 border border-amber-500/40 text-amber-300" title="Default rolling blend engine, residual quantiles, P(Severe) risk indicator">
+          <span class="material-symbols-outlined text-xs">check_circle</span>
+          <span>feat/fix-default-forecast</span>
+        </span>
+        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-indigo-500/20 border border-indigo-500/40 text-indigo-300" title="Staleness guard, historical replay, lead-dependent uncertainty scaling">
+          <span class="material-symbols-outlined text-xs">check_circle</span>
+          <span>feat/staleness-guard-and-replay</span>
+        </span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Content Canvas -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+
+    <!-- Controls Row: Mode Toggle, Station Selector, Pollutant Pills -->
+    <div class="bg-[#162029] p-4 rounded border border-white/10 flex flex-wrap items-center justify-between gap-4 shadow-lg">
+      
+      <!-- Left: Mode Toggle (Live Forecast vs Replay Mode) -->
+      <div class="flex items-center gap-3">
+        <span class="text-xs font-mono uppercase text-slate-400">Dataset Mode:</span>
+        <div class="inline-flex rounded bg-[#121a22] p-1 border border-white/10" id="mode-selector">
+          <button id="btn-mode-live" onclick="setMode('live')" class="px-3 py-1 rounded text-xs font-mono font-medium transition-all bg-[#c9884f] text-slate-950 shadow">
+            Live Forecast (Operational)
+          </button>
+          <button id="btn-mode-replay" onclick="setMode('replay')" class="px-3 py-1 rounded text-xs font-mono font-medium transition-all text-slate-400 hover:text-slate-200">
+            Historical Replay + Actuals
+          </button>
+        </div>
+      </div>
+
+      <!-- Center: Station Select Tabs -->
+      <div class="flex items-center gap-2">
+        <span class="text-xs font-mono uppercase text-slate-400">Station:</span>
+        <div class="inline-flex rounded bg-[#121a22] p-1 border border-white/10" id="station-selector">
+          <!-- Dynamically populated -->
+        </div>
+      </div>
+
+      <!-- Right: Pollutant Selector -->
+      <div class="flex items-center gap-2">
+        <span class="text-xs font-mono uppercase text-slate-400">Parameter:</span>
+        <div class="inline-flex rounded bg-[#121a22] p-1 border border-white/10" id="param-selector">
+          <button onclick="setParam('aqi')" class="param-btn px-2.5 py-1 rounded text-xs font-mono font-semibold transition-all bg-[#2f6f73] text-white" data-param="aqi">AQI</button>
+          <button onclick="setParam('pm25')" class="param-btn px-2.5 py-1 rounded text-xs font-mono transition-all text-slate-400 hover:text-slate-200" data-param="pm25">PM2.5</button>
+          <button onclick="setParam('pm10')" class="param-btn px-2.5 py-1 rounded text-xs font-mono transition-all text-slate-400 hover:text-slate-200" data-param="pm10">PM10</button>
+          <button onclick="setParam('no2')" class="param-btn px-2.5 py-1 rounded text-xs font-mono transition-all text-slate-400 hover:text-slate-200" data-param="no2">NO2</button>
+          <button onclick="setParam('o3')" class="param-btn px-2.5 py-1 rounded text-xs font-mono transition-all text-slate-400 hover:text-slate-200" data-param="o3">O3</button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Telemetry Cards Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      
+      <!-- Card 1: Forecasting Engine -->
+      <div class="bg-[#162029] p-4 rounded border border-white/10 space-y-2">
+        <div class="flex items-center justify-between text-xs font-mono text-slate-400">
+          <span>FORECAST ENGINE</span>
+          <span class="material-symbols-outlined text-sm text-[#c9884f]">bolt</span>
+        </div>
+        <div class="text-sm font-semibold text-white truncate" id="card-engine-name">Loading...</div>
+        <div class="text-[11px] font-mono text-emerald-400 flex items-center gap-1">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+          <span>Default: 7-day rolling bias blend</span>
+        </div>
+        <div class="text-[10px] text-slate-400 border-t border-white/5 pt-1.5">
+          LightGBM retained as alternative model
+        </div>
+      </div>
+
+      <!-- Card 2: Staleness Guard Status -->
+      <div class="bg-[#162029] p-4 rounded border border-white/10 space-y-2">
+        <div class="flex items-center justify-between text-xs font-mono text-slate-400">
+          <span>STALENESS GUARD</span>
+          <span class="material-symbols-outlined text-sm text-indigo-400">shield</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="px-2 py-0.5 rounded text-xs font-mono font-semibold" id="card-staleness-badge">Checking...</span>
+        </div>
+        <div class="text-[11px] font-mono text-slate-300" id="card-staleness-detail">
+          Newest Obs: -- | Recent 7d: --
+        </div>
+        <div class="text-[10px] text-slate-400 border-t border-white/5 pt-1.5" id="card-fallback-note">
+          Automatic raw CAMS fallback on stale data
+        </div>
+      </div>
+
+      <!-- Card 3: P(Severe) Risk Indicators -->
+      <div class="bg-[#162029] p-4 rounded border border-white/10 space-y-2">
+        <div class="flex items-center justify-between text-xs font-mono text-slate-400">
+          <span>P(SEVERE) RISK INDICATOR</span>
+          <span class="material-symbols-outlined text-sm text-[#8b1c2c]">warning</span>
+        </div>
+        <div class="grid grid-cols-3 gap-1 font-mono text-center">
+          <div class="p-1 rounded bg-[#121a22] border border-white/5">
+            <div class="text-[9px] text-slate-400">24h</div>
+            <div class="text-sm font-bold text-amber-400" id="card-psev-24">--</div>
+          </div>
+          <div class="p-1 rounded bg-[#121a22] border border-white/5">
+            <div class="text-[9px] text-slate-400">48h</div>
+            <div class="text-sm font-bold text-amber-400" id="card-psev-48">--</div>
+          </div>
+          <div class="p-1 rounded bg-[#121a22] border border-white/5">
+            <div class="text-[9px] text-slate-400">72h</div>
+            <div class="text-sm font-bold text-amber-400" id="card-psev-72">--</div>
+          </div>
+        </div>
+        <div class="text-[10px] text-amber-300/80 border-t border-white/5 pt-1.5 truncate" title="Uncalibrated risk indicator; zero skill claimed over climatological reference">
+          Uncalibrated indicator (joint PM2.5/PM10)
+        </div>
+      </div>
+
+      <!-- Card 4: Uncertainty Scaling Heuristic -->
+      <div class="bg-[#162029] p-4 rounded border border-white/10 space-y-2">
+        <div class="flex items-center justify-between text-xs font-mono text-slate-400">
+          <span>UNCERTAINTY INTERVALS</span>
+          <span class="material-symbols-outlined text-sm text-teal-400">expand</span>
+        </div>
+        <div class="text-sm font-mono font-semibold text-teal-300">
+          p10 · p50 · p90 Spread
+        </div>
+        <div class="text-[11px] font-mono text-slate-300">
+          Lead scaling: <code class="text-teal-400">(1.0 + 0.004 × h)</code>
+        </div>
+        <div class="text-[10px] text-slate-400 border-t border-white/5 pt-1.5">
+          Cones widen dynamically through 72 hours
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Active Station Header Banner -->
+    <div class="bg-[#162029] p-4 rounded border border-white/10 flex flex-wrap justify-between items-center gap-4">
+      <div>
+        <div class="flex items-center gap-2">
+          <h2 class="font-headline text-2xl font-normal text-white" id="current-station-name">Loading station...</h2>
+          <span class="text-xs font-mono px-2 py-0.5 rounded bg-white/5 text-slate-300 border border-white/10" id="current-station-id">--</span>
+        </div>
+        <p class="text-xs font-mono text-slate-400 mt-1" id="current-issue-time">Issue Time: --</p>
+      </div>
+
+      <div class="flex items-center gap-4 text-xs font-mono">
+        <div class="flex items-center gap-1.5">
+          <span class="w-3 h-3 rounded-sm bg-[#c9884f]"></span>
+          <span class="text-slate-300">p50 Forecast</span>
+        </div>
+        <div class="flex items-center gap-1.5">
+          <span class="w-3 h-3 rounded-sm bg-[#c9884f]/25 border border-[#c9884f]/50"></span>
+          <span class="text-slate-300">p10–p90 Range</span>
+        </div>
+        <div class="flex items-center gap-1.5" id="legend-observed">
+          <span class="w-3 h-3 rounded-full bg-emerald-400 ring-2 ring-emerald-500/40"></span>
+          <span class="text-emerald-300">Actual Observed</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Chart Section -->
+    <div class="bg-[#162029] p-5 rounded border border-white/10 space-y-4 shadow-md">
+      <div class="flex items-center justify-between border-b border-white/10 pb-3">
+        <div>
+          <h3 class="text-sm font-mono font-semibold uppercase tracking-wider text-slate-200" id="chart-title">
+            72-Hour Air Quality Index (AQI) Trajectory
+          </h3>
+          <p class="text-[11px] text-slate-400 mt-0.5" id="chart-subtitle">
+            Showing hourly quantiles (p10, p50, p90) with lead-dependent widening uncertainty through h=72
+          </p>
+        </div>
+        <div class="text-xs font-mono text-[#c9884f]" id="chart-param-unit">
+          Unit: Index Value (CPCB NAQI)
+        </div>
+      </div>
+
+      <div class="relative w-full h-[380px]">
+        <canvas id="forecastChart"></canvas>
+      </div>
+    </div>
+
+    <!-- Replay Comparison Panel (Visible only in Replay mode) -->
+    <div id="replay-panel" class="hidden bg-[#162029] p-5 rounded border border-emerald-500/30 space-y-3 shadow-md">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <span class="material-symbols-outlined text-emerald-400">history_edu</span>
+          <h3 class="font-headline text-lg text-emerald-300">Historical Replay Evaluation (Forecast vs Actual Ground Truth)</h3>
+        </div>
+        <span class="text-xs font-mono px-2.5 py-1 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
+          Ground-Truth Matched
+        </span>
+      </div>
+      <p class="text-xs text-slate-300">
+        In Replay mode (<code class="text-amber-300">--issue-time "2025-11-12 20:00"</code>), the 72-hour forecast issued into held-out winter 2025–26 is evaluated against verified hourly observations recorded at the station.
+      </p>
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 font-mono text-xs pt-2">
+        <div class="p-2.5 rounded bg-[#121a22] border border-white/5">
+          <div class="text-slate-400 text-[10px]">VERIFIED HOURLY OBS</div>
+          <div class="text-base font-bold text-emerald-400" id="replay-obs-count">72 / 72 hrs</div>
+        </div>
+        <div class="p-2.5 rounded bg-[#121a22] border border-white/5">
+          <div class="text-slate-400 text-[10px]">BIAS CORRECTION</div>
+          <div class="text-base font-bold text-teal-400">Applied (145 obs)</div>
+        </div>
+        <div class="p-2.5 rounded bg-[#121a22] border border-white/5">
+          <div class="text-slate-400 text-[10px]">ACTUAL AQI RANGE</div>
+          <div class="text-base font-bold text-amber-400" id="replay-aqi-range">380 – 500</div>
+        </div>
+        <div class="p-2.5 rounded bg-[#121a22] border border-white/5">
+          <div class="text-slate-400 text-[10px]">CATEGORY MATCH</div>
+          <div class="text-base font-bold text-indigo-400">Within ±1 Tier: 83.8%</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Hourly Forecast Telemetry Table -->
+    <div class="bg-[#162029] rounded border border-white/10 overflow-hidden shadow-md space-y-2">
+      <div class="p-4 border-b border-white/10 flex justify-between items-center">
+        <div>
+          <h3 class="text-sm font-mono font-semibold uppercase tracking-wider text-slate-200">
+            Hourly Forecast Data Table (72-Hour Horizon)
+          </h3>
+          <p class="text-[11px] text-slate-400">Detailed quantiles, lead hour factor, and observation status</p>
+        </div>
+        <span class="text-xs font-mono text-slate-400" id="table-row-count">72 hours</span>
+      </div>
+
+      <div class="overflow-x-auto max-h-[340px] custom-scrollbar">
+        <table class="w-full text-left font-mono text-xs">
+          <thead class="bg-[#121a22] text-slate-400 text-[11px] uppercase tracking-wider sticky top-0 border-b border-white/10">
+            <tr>
+              <th class="py-2.5 px-3">Lead (h)</th>
+              <th class="py-2.5 px-3">Valid Time (IST)</th>
+              <th class="py-2.5 px-3">AQI (p10 / p50 / p90)</th>
+              <th class="py-2.5 px-3">Category</th>
+              <th class="py-2.5 px-3">PM2.5 (µg/m³)</th>
+              <th class="py-2.5 px-3">PM10 (µg/m³)</th>
+              <th class="py-2.5 px-3">NO2 (µg/m³)</th>
+              <th class="py-2.5 px-3">O3 (µg/m³)</th>
+              <th class="py-2.5 px-3 text-emerald-400" id="th-observed">Observed</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-white/5 text-slate-300" id="hourly-table-body">
+            <!-- Dynamically populated -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Multi-Winter Benchmark Verification Matrix -->
+    <div class="bg-[#162029] p-5 rounded border border-white/10 space-y-4 shadow-md">
+      <div class="border-b border-white/10 pb-3 flex flex-wrap justify-between items-center gap-2">
+        <div>
+          <div class="inline-flex items-center gap-1.5 text-xs font-mono text-[#c9884f]">
+            <span class="material-symbols-outlined text-sm">verified</span>
+            <span>OUT-OF-SAMPLE VERIFICATION (docs/verification.json)</span>
+          </div>
+          <h3 class="font-headline text-xl text-white">Six-Winter Audit &amp; 2025–26 Benchmark Performance</h3>
+        </div>
+        <a href="docs/verification.md" target="_blank" class="text-xs font-mono text-teal-400 hover:text-teal-300 underline flex items-center gap-1">
+          <span>Read docs/verification.md</span>
+          <span class="material-symbols-outlined text-xs">open_in_new</span>
+        </a>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs font-mono">
+        <div class="p-3 rounded bg-[#121a22] border border-white/5">
+          <div class="text-slate-400 text-[10px]">PM2.5 CAMS BC MAE</div>
+          <div class="text-lg font-bold text-emerald-400">50.27 µg/m³</div>
+          <div class="text-[10px] text-emerald-300/80">-27.7% vs Raw CAMS (69.52)</div>
+        </div>
+        <div class="p-3 rounded bg-[#121a22] border border-white/5">
+          <div class="text-slate-400 text-[10px]">PM10 CAMS BC MAE</div>
+          <div class="text-lg font-bold text-emerald-400">107.35 µg/m³</div>
+          <div class="text-[10px] text-emerald-300/80">-44.1% vs Raw CAMS (192.09)</div>
+        </div>
+        <div class="p-3 rounded bg-[#121a22] border border-white/5">
+          <div class="text-slate-400 text-[10px]">CATEGORY ACCURACY</div>
+          <div class="text-lg font-bold text-indigo-400">44.3% (±1: 83.8%)</div>
+          <div class="text-[10px] text-slate-400">Raw CAMS: 23.9%</div>
+        </div>
+        <div class="p-3 rounded bg-[#121a22] border border-white/5">
+          <div class="text-slate-400 text-[10px]">BRIER SKILL (P(Severe))</div>
+          <div class="text-lg font-bold text-amber-400">+0.181 vs Persistence</div>
+          <div class="text-[10px] text-slate-400">Zero skill vs climatology</div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Diagnostic Footer -->
+  <footer class="bg-[#121b22] border-t border-white/10 text-xs font-mono text-slate-400 py-6 px-4 sm:px-6 lg:px-8 mt-12">
+    <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+      <div class="space-y-1 text-center md:text-left">
+        <div class="text-slate-200 font-sans font-semibold">VAAYU Operational Preview · Smart India Hackathon 2026</div>
+        <div class="text-[11px] text-slate-500">Ministry of Earth Sciences (MoES) / NCMRWF · Delhi NCR Focus</div>
+      </div>
+      <div class="flex flex-wrap items-center gap-4 text-[11px]">
+        <a href="design/stitch/overview.html" class="hover:text-slate-200 transition-colors">Observatory</a>
+        <a href="design/stitch/station_explorer.html" class="hover:text-slate-200 transition-colors">Station Explorer</a>
+        <a href="design/stitch/aqi_calculator.html" class="hover:text-slate-200 transition-colors">AQI Calculator</a>
+        <a href="design/stitch/inversion_viewer.html" class="hover:text-slate-200 transition-colors">Inversion Viewer</a>
+        <span class="text-white/20">•</span>
+        <span class="text-emerald-400">All 3 Branches Active</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Application Logic -->
+  <script>
+    let liveData = null;
+    let replayData = null;
+    let currentMode = "live";
+    let currentStationIndex = 0;
+    let currentParam = "aqi";
+    let chartInstance = null;
+
+    const paramLabels = {
+      aqi: { title: "Air Quality Index (AQI)", unit: "CPCB NAQI Index" },
+      pm25: { title: "PM2.5 Fine Particulate Matter", unit: "µg/m³" },
+      pm10: { title: "PM10 Coarse Particulate Matter", unit: "µg/m³" },
+      no2: { title: "Nitrogen Dioxide (NO2)", unit: "µg/m³" },
+      o3: { title: "Ozone (O3)", unit: "µg/m³" }
+    };
+
+    const categoryColors = {
+      "Good": "text-emerald-400 bg-emerald-500/20 border-emerald-500/40",
+      "Satisfactory": "text-green-300 bg-green-500/20 border-green-500/40",
+      "Moderate": "text-amber-300 bg-amber-500/20 border-amber-500/40",
+      "Poor": "text-orange-400 bg-orange-500/20 border-orange-500/40",
+      "Very Poor": "text-rose-400 bg-rose-500/20 border-rose-500/40",
+      "Severe": "text-red-500 bg-red-900/40 border-red-700/60 font-bold",
+      "Unknown": "text-slate-400 bg-white/5 border-white/10"
+    };
+
+    async function loadData() {
+      try {
+        const [liveRes, replayRes] = await Promise.allSettled([
+          fetch("/data/forecast.json").catch(() => fetch("data/forecast.json")),
+          fetch("/data/forecast_replay.json").catch(() => fetch("data/forecast_replay.json"))
+        ]);
+
+        if (liveRes.status === "fulfilled" && liveRes.value.ok) {
+          liveData = await liveRes.value.json();
+        }
+        if (replayRes.status === "fulfilled" && replayRes.value.ok) {
+          replayData = await replayRes.value.json();
+        }
+
+        renderStationSelector();
+        updateUI();
+      } catch (err) {
+        console.error("Failed to load forecast datasets:", err);
+      }
+    }
+
+    function getActiveDataset() {
+      if (currentMode === "replay" && replayData) {
+        return replayData;
+      }
+      return liveData;
+    }
+
+    function setMode(mode) {
+      currentMode = mode;
+      document.getElementById("btn-mode-live").className = mode === "live" 
+        ? "px-3 py-1 rounded text-xs font-mono font-medium transition-all bg-[#c9884f] text-slate-950 shadow"
+        : "px-3 py-1 rounded text-xs font-mono font-medium transition-all text-slate-400 hover:text-slate-200";
+      
+      document.getElementById("btn-mode-replay").className = mode === "replay" 
+        ? "px-3 py-1 rounded text-xs font-mono font-medium transition-all bg-emerald-500 text-slate-950 shadow"
+        : "px-3 py-1 rounded text-xs font-mono font-medium transition-all text-slate-400 hover:text-slate-200";
+
+      const replayPanel = document.getElementById("replay-panel");
+      if (mode === "replay") {
+        replayPanel.classList.remove("hidden");
+      } else {
+        replayPanel.classList.add("hidden");
+      }
+
+      renderStationSelector();
+      updateUI();
+    }
+
+    function setParam(param) {
+      currentParam = param;
+      document.querySelectorAll(".param-btn").forEach(btn => {
+        if (btn.dataset.param === param) {
+          btn.className = "param-btn px-2.5 py-1 rounded text-xs font-mono font-semibold transition-all bg-[#2f6f73] text-white";
+        } else {
+          btn.className = "param-btn px-2.5 py-1 rounded text-xs font-mono transition-all text-slate-400 hover:text-slate-200";
+        }
+      });
+      updateUI();
+    }
+
+    function renderStationSelector() {
+      const data = getActiveDataset();
+      const container = document.getElementById("station-selector");
+      if (!data || !data.stations) return;
+
+      container.innerHTML = "";
+      data.stations.forEach((st, idx) => {
+        const btn = document.createElement("button");
+        const isActive = idx === currentStationIndex;
+        btn.className = isActive 
+          ? "px-3 py-1 rounded text-xs font-mono font-medium bg-[#1e2a35] text-amber-300 border border-[#c9884f]/40 shadow-sm"
+          : "px-3 py-1 rounded text-xs font-mono font-medium text-slate-400 hover:text-slate-200";
+        
+        let label = st.name.split(",")[0];
+        btn.textContent = label;
+        btn.onclick = () => {
+          currentStationIndex = idx;
+          renderStationSelector();
+          updateUI();
+        };
+        container.appendChild(btn);
+      });
+    }
+
+    function updateUI() {
+      const data = getActiveDataset();
+      if (!data || !data.stations || !data.stations[currentStationIndex]) return;
+
+      const station = data.stations[currentStationIndex];
+
+      // Update Header Info
+      document.getElementById("current-station-name").textContent = station.name;
+      document.getElementById("current-station-id").textContent = station.id;
+      document.getElementById("current-issue-time").textContent = `Issued: ${data.issued_at} IST | Horizon: 72 Hours`;
+
+      // Update Engine Card
+      document.getElementById("card-engine-name").textContent = data.forecasting_engine || "Rolling Bias Blend";
+
+      // Update Staleness Guard Card
+      const badge = document.getElementById("card-staleness-badge");
+      const biasStatus = station.bias_correction || "unknown";
+      if (biasStatus === "applied") {
+        badge.textContent = "Obs Live · Bias Corrected";
+        badge.className = "px-2 py-0.5 rounded text-xs font-mono font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40";
+      } else {
+        badge.textContent = "Staleness Guard Active (Raw CAMS)";
+        badge.className = "px-2 py-0.5 rounded text-xs font-mono font-semibold bg-rose-500/20 text-rose-300 border border-rose-500/40";
+      }
+
+      const ageStr = station.newest_obs_age_hours != null ? `${station.newest_obs_age_hours.toFixed(1)}h` : "None";
+      const count7d = station.recent_obs_count_7d != null ? station.recent_obs_count_7d : 0;
+      document.getElementById("card-staleness-detail").textContent = `Newest Obs Age: ${ageStr} | 7d Obs: ${count7d}`;
+      document.getElementById("card-fallback-note").textContent = biasStatus === "applied" 
+        ? "Sufficient recent observations available"
+        : "Raw CAMS fallback + widened uncertainty heuristic active";
+
+      // Update P(Severe)
+      const psev = station.p_severe || { "24h": 0, "48h": 0, "72h": 0 };
+      document.getElementById("card-psev-24").textContent = (psev["24h"] * 100).toFixed(0) + "%";
+      document.getElementById("card-psev-48").textContent = (psev["48h"] * 100).toFixed(0) + "%";
+      document.getElementById("card-psev-72").textContent = (psev["72h"] * 100).toFixed(0) + "%";
+
+      // Update Chart Titles
+      document.getElementById("chart-title").textContent = `72-Hour ${paramLabels[currentParam].title} Forecast`;
+      document.getElementById("chart-param-unit").textContent = `Unit: ${paramLabels[currentParam].unit}`;
+
+      // Render Chart
+      renderChart(station.hourly);
+
+      // Render Table
+      renderTable(station.hourly);
+    }
+
+    function renderChart(hourly) {
+      const ctx = document.getElementById("forecastChart").getContext("2d");
+      const labels = hourly.map(h => `+${h.lead_h}h`);
+      
+      const p10Data = hourly.map(h => h[currentParam] ? h[currentParam].p10 : null);
+      const p50Data = hourly.map(h => h[currentParam] ? h[currentParam].p50 : null);
+      const p90Data = hourly.map(h => h[currentParam] ? h[currentParam].p90 : null);
+      
+      const obsData = hourly.map(h => (h.observed && h.observed[currentParam] != null) ? h.observed[currentParam] : null);
+      const hasObs = obsData.some(v => v !== null);
+
+      if (chartInstance) {
+        chartInstance.destroy();
+      }
+
+      const datasets = [
+        {
+          label: "p90 Upper Bound",
+          data: p90Data,
+          borderColor: "transparent",
+          backgroundColor: "rgba(201, 136, 79, 0.15)",
+          pointRadius: 0,
+          fill: "+1",
+          tension: 0.3
+        },
+        {
+          label: "p10 Lower Bound",
+          data: p10Data,
+          borderColor: "transparent",
+          backgroundColor: "transparent",
+          pointRadius: 0,
+          fill: false,
+          tension: 0.3
+        },
+        {
+          label: "p50 Operational Forecast",
+          data: p50Data,
+          borderColor: "#c9884f",
+          backgroundColor: "#c9884f",
+          borderWidth: 2.5,
+          pointRadius: 1.5,
+          pointHoverRadius: 5,
+          tension: 0.3
+        }
+      ];
+
+      if (hasObs) {
+        datasets.push({
+          label: "Observed Ground Truth",
+          data: obsData,
+          borderColor: "#34d399",
+          backgroundColor: "#34d399",
+          borderWidth: 2,
+          pointRadius: 3,
+          pointHoverRadius: 6,
+          borderDash: [4, 4],
+          tension: 0.2
+        });
+      }
+
+      chartInstance = new Chart(ctx, {
+        type: "line",
+        data: {
+          labels: labels,
+          datasets: datasets
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          interaction: {
+            mode: "index",
+            intersect: false
+          },
+          plugins: {
+            legend: {
+              display: true,
+              labels: {
+                color: "#a0aec0",
+                font: { family: "JetBrains Mono", size: 11 },
+                filter: item => item.text !== "p10 Lower Bound"
+              }
+            },
+            tooltip: {
+              backgroundColor: "#121a22",
+              borderColor: "rgba(255,255,255,0.15)",
+              borderWidth: 1,
+              titleFont: { family: "JetBrains Mono" },
+              bodyFont: { family: "JetBrains Mono" }
+            }
+          },
+          scales: {
+            x: {
+              grid: { color: "rgba(255, 255, 255, 0.05)" },
+              ticks: { color: "#a0aec0", font: { family: "JetBrains Mono", size: 10 } }
+            },
+            y: {
+              grid: { color: "rgba(255, 255, 255, 0.08)" },
+              ticks: { color: "#a0aec0", font: { family: "JetBrains Mono", size: 10 } }
+            }
+          }
+        }
+      });
+    }
+
+    function renderTable(hourly) {
+      const tbody = document.getElementById("hourly-table-body");
+      tbody.innerHTML = "";
+
+      hourly.forEach(h => {
+        const tr = document.createElement("tr");
+        tr.className = "hover:bg-white/5 transition-colors";
+
+        const catClass = categoryColors[h.category] || categoryColors["Unknown"];
+        const obsVal = h.observed && h.observed.aqi != null 
+          ? `<span class="text-emerald-400 font-semibold">${h.observed.aqi} (${h.observed.category})</span>`
+          : `<span class="text-slate-600">--</span>`;
+
+        tr.innerHTML = `
+          <td class="py-2 px-3 font-semibold text-amber-400">+${h.lead_h}h</td>
+          <td class="py-2 px-3 text-slate-400">${h.valid_time.replace("T", " ").slice(5, 16)}</td>
+          <td class="py-2 px-3">
+            <span class="text-slate-400">${h.aqi.p10}</span>
+            <span class="text-white font-bold mx-1">· ${h.aqi.p50} ·</span>
+            <span class="text-slate-400">${h.aqi.p90}</span>
+          </td>
+          <td class="py-2 px-3">
+            <span class="px-2 py-0.5 rounded text-[10px] border ${catClass}">${h.category}</span>
+          </td>
+          <td class="py-2 px-3">${h.pm25.p50}</td>
+          <td class="py-2 px-3">${h.pm10.p50}</td>
+          <td class="py-2 px-3">${h.no2.p50}</td>
+          <td class="py-2 px-3">${h.o3.p50}</td>
+          <td class="py-2 px-3">${obsVal}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // Initialize on load
+    window.addEventListener("DOMContentLoaded", loadData);
+  </script>
+</body>
+</html>

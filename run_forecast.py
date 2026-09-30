@@ -9,12 +9,24 @@ using strictly data available at or before issue time. O3 and NO2 are produced v
 lead-aware blending of persistence and bias-corrected CAMS (experimental, single-station).
 LightGBM quantile models remain available behind the `--model lgbm` flag.
 
-Converts PM forecasts to CPCB AQI using the official aqi.py engine, and computes
-P(Severe) at 24h, 48h, and 72h as an uncalibrated risk indicator (no skill claimed
-over climatology).
+Staleness Guard:
+Bias correction is applied ONLY if at least 6 valid observation hours exist within
+the 7 days immediately preceding issue_time. If fewer than 6 valid hours exist,
+the guard marks "bias_correction": "unavailable_no_recent_obs", falls back to raw CAMS
+(p50 = CAMS), applies a wide lead-dependent default band, and logs the age of the newest
+available observation.
+
+Replay Mode:
+When an issue time with available forward observations is evaluated (or via `--replay`),
+actual observed values for the matching valid times are written to data/forecast_replay.json.
+
+Uncertainty Heuristic:
+The p10/p90 prediction interval widens with lead horizon via the scaling factor
+(1.0 + 0.004 * lead_h), reflecting increasing atmospheric divergence over time.
 
 Outputs:
-- data/forecast.json adhering strictly to the official schema.
+- data/forecast.json (operational forecast)
+- data/forecast_replay.json (when replaying historical issue times with observed ground truth)
 """
 
 import argparse
@@ -58,6 +70,7 @@ from forecast_model import (
 )
 
 DEFAULT_OUTPUT_JSON = Path("data/forecast.json")
+DEFAULT_REPLAY_JSON = Path("data/forecast_replay.json")
 SITE_DATA_JSON = Path("site/data.json")
 
 
@@ -134,47 +147,69 @@ def convert_pm_to_aqi(
     return aqi_val, cat
 
 
-def compute_station_trailing_residuals(
+def inspect_station_staleness_and_residuals(
     station_id: str,
     issue_time: pd.Timestamp,
     obs_df: pd.DataFrame,
     hist_drivers_df: Optional[pd.DataFrame] = None,
     min_periods: int = 6,
-) -> Dict[str, Dict[str, float]]:
-    """Compute empirical residual stats (obs - CAMS) over the trailing 7-day window.
+) -> Tuple[str, Optional[float], int, Dict[str, Dict[str, float]]]:
+    """Inspect trailing observation staleness and compute 7-day residual quantiles.
 
-    Guarantees strictly t <= issue_time.
-    If observations in [issue_time - 7d, issue_time] have < min_periods valid points,
-    falls back gracefully to the most recent 7-day observation period available at or before issue_time.
+    Rules:
+    - Strictly inspects observations available at or before issue_time.
+    - Requires at least min_periods (6) valid hours in [issue_time - 7 days, issue_time].
+    - NEVER falls back to an older observation window.
+    - If valid hours < min_periods, status is 'unavailable_no_recent_obs'.
+    - Also calculates the age of the newest observation available at or before issue_time.
+
+    Returns:
+    - status: 'applied' or 'unavailable_no_recent_obs'
+    - newest_obs_age_hours: age in hours from issue_time to newest observation (or None)
+    - valid_obs_count_7d: number of valid PM2.5 hours in the 7-day window
+    - residual_stats: dict of {pollutant: {'mean', 'p10', 'p50', 'p90'}}
     """
-    stats: Dict[str, Dict[str, float]] = {}
     st_obs = obs_df[(obs_df["station_id"] == station_id) & (obs_df["timestamp"] <= issue_time)]
-    if len(st_obs) == 0:
-        for p in POLLUTANTS:
-            stats[p] = {"mean": 0.0, "p10": -15.0, "p50": 0.0, "p90": 15.0}
-        return stats
+    newest_obs_time = st_obs.dropna(subset=["pm25"])["timestamp"].max() if len(st_obs) > 0 else None
+    if pd.isna(newest_obs_time):
+        newest_obs_time = st_obs["timestamp"].max() if len(st_obs) > 0 else None
 
-    st_obs_idx = st_obs.set_index("timestamp").sort_index()
+    age_hours = (
+        round((issue_time - newest_obs_time).total_seconds() / 3600.0, 1)
+        if pd.notna(newest_obs_time) else None
+    )
+
+    # Strictly 7-day trailing window before issue_time
+    w_start = issue_time - pd.Timedelta(days=7)
+    recent_obs = st_obs[st_obs["timestamp"] >= w_start]
+    valid_count_pm25 = int(recent_obs["pm25"].notna().sum()) if len(recent_obs) > 0 else 0
+
+    if valid_count_pm25 < min_periods:
+        # Guard fails: zero fallback to older windows
+        status = "unavailable_no_recent_obs"
+        empty_stats = {p: {"mean": 0.0, "p10": 0.0, "p50": 0.0, "p90": 0.0} for p in POLLUTANTS}
+        return status, age_hours, valid_count_pm25, empty_stats
+
+    # Guard passed: compute trailing 7-day residuals
+    status = "applied"
+    recent_obs_idx = recent_obs.set_index("timestamp").sort_index()
 
     if hist_drivers_df is not None and len(hist_drivers_df) > 0:
         st_drv = hist_drivers_df[
-            (hist_drivers_df["station_id"] == station_id) & (hist_drivers_df["timestamp"] <= issue_time)
+            (hist_drivers_df["station_id"] == station_id)
+            & (hist_drivers_df["timestamp"] >= w_start)
+            & (hist_drivers_df["timestamp"] <= issue_time)
         ].set_index("timestamp").sort_index()
     else:
         st_drv = pd.DataFrame()
 
+    stats = {}
     for p in POLLUTANTS:
         drv_col = DRIVER_POLLUTANT_MAP.get(p, p)
-        if drv_col in st_drv.columns and p in st_obs_idx.columns:
-            aligned = pd.DataFrame({"obs": st_obs_idx[p], "cams": st_drv[drv_col]}).dropna()
-            sub = aligned[aligned.index >= (issue_time - pd.Timedelta(days=7))]
-            if len(sub) < min_periods:
-                max_t = aligned.index.max()
-                if pd.notna(max_t):
-                    sub = aligned[aligned.index >= (max_t - pd.Timedelta(days=7))]
-
-            if len(sub) >= min_periods:
-                res = sub["obs"] - sub["cams"]
+        if drv_col in st_drv.columns and p in recent_obs_idx.columns:
+            aligned = pd.DataFrame({"obs": recent_obs_idx[p], "cams": st_drv[drv_col]}).dropna()
+            if len(aligned) >= min_periods:
+                res = aligned["obs"] - aligned["cams"]
                 stats[p] = {
                     "mean": float(np.mean(res)),
                     "p10": float(np.percentile(res, 10)),
@@ -186,7 +221,7 @@ def compute_station_trailing_residuals(
         else:
             stats[p] = {"mean": 0.0, "p10": -15.0, "p50": 0.0, "p90": 15.0}
 
-    return stats
+    return status, age_hours, valid_count_pm25, stats
 
 
 def generate_forecast_for_station(
@@ -209,7 +244,7 @@ def generate_forecast_for_station(
     else:
         issue_time = issue_time.tz_convert("Asia/Kolkata")
 
-    # Determine model type: if models passed and model_type not specified, respect models
+    # Determine model type
     if model_type is None:
         model_type = "lgbm" if (models is not None and len(models) > 0) else "blend"
 
@@ -245,17 +280,19 @@ def generate_forecast_for_station(
     if len(df_samples) == 0:
         raise ValueError(f"No driver forecast samples available for station {station_id} at issue time {issue_time}")
 
-    # Ensure exact 1..max_lead_h rows
     df_samples = df_samples.sort_values("lead_h").head(max_lead_h)
 
-    # 4. Predict quantiles according to chosen model
+    # 4. Predict quantiles according to chosen model and staleness guard
     if model_type == "lgbm":
         if models is None:
             models, _ = load_models(MODELS_DIR)
         preds = predict_quantiles(models, df_samples[FEATURE_COLUMNS], enforce_monotonic=True)
+        bias_status = "not_applicable_lgbm"
+        obs_age_h = None
+        obs_count_7d = 0
     else:
-        # Default: Rolling 7-day bias-corrected CAMS & lead blend
-        residual_stats = compute_station_trailing_residuals(
+        # Default: Rolling 7-day bias-corrected CAMS with Staleness Guard
+        bias_status, obs_age_h, obs_count_7d, residual_stats = inspect_station_staleness_and_residuals(
             station_id=station_id,
             issue_time=issue_time,
             obs_df=obs_df,
@@ -269,6 +306,8 @@ def generate_forecast_for_station(
     for idx, row in df_samples.iterrows():
         lead_h = int(row["lead_h"])
         v_time = row["valid_time"].isoformat()
+        # Heuristic uncertainty expansion with lead horizon: 1.0 + 0.004 * lead_h
+        lead_factor = 1.0 + 0.004 * lead_h
 
         if model_type == "lgbm":
             pm25_q = {
@@ -291,26 +330,29 @@ def generate_forecast_for_station(
                 "p50": round(float(preds["no2"]["p50"][idx]), 1),
                 "p90": round(float(preds["no2"]["p90"][idx]), 1),
             }
-        else:
-            # --- PM2.5: Rolling 7-day bias-corrected CAMS + empirical residual quantiles ---
+        elif bias_status == "applied":
+            # --- GUARD PASSED: 7-day rolling bias-corrected CAMS with lead-widening residual band ---
             cams_25 = float(row["driver_pm25"])
             r25 = residual_stats["pm25"]
             p50_25 = max(0.0, cams_25 + r25["mean"])
-            p10_25 = max(0.0, cams_25 + r25["p10"])
-            p90_25 = max(p50_25, cams_25 + r25["p90"])
+            hw_low_25 = max(5.0, r25["mean"] - r25["p10"]) * lead_factor
+            hw_high_25 = max(5.0, r25["p90"] - r25["mean"]) * lead_factor
+            p10_25 = max(0.0, p50_25 - hw_low_25)
+            p90_25 = p50_25 + hw_high_25
             p10_25 = min(p10_25, p50_25)
             pm25_q = {"p10": round(p10_25, 1), "p50": round(p50_25, 1), "p90": round(p90_25, 1)}
 
-            # --- PM10: Rolling 7-day bias-corrected CAMS + empirical residual quantiles ---
             cams_10 = float(row["driver_pm10"])
             r10 = residual_stats["pm10"]
             p50_10 = max(0.0, cams_10 + r10["mean"])
-            p10_10 = max(0.0, cams_10 + r10["p10"])
-            p90_10 = max(p50_10, cams_10 + r10["p90"])
+            hw_low_10 = max(10.0, r10["mean"] - r10["p10"]) * lead_factor
+            hw_high_10 = max(10.0, r10["p90"] - r10["mean"]) * lead_factor
+            p10_10 = max(0.0, p50_10 - hw_low_10)
+            p90_10 = p50_10 + hw_high_10
             p10_10 = min(p10_10, p50_10)
             pm10_q = {"p10": round(p10_10, 1), "p50": round(p50_10, 1), "p90": round(p90_10, 1)}
 
-            # --- O3: Lead-aware blend (persistence + bias-corrected CAMS) ---
+            # O3: Lead-blend with lead-scaled spread
             last_obs_o3 = row["last_obs_o3"]
             cams_o3 = float(row["driver_o3"])
             r_o3 = residual_stats["o3"]
@@ -319,12 +361,12 @@ def generate_forecast_for_station(
                 DEFAULT_BLEND_WEIGHTS["o3"]["25-48h"] if lead_h <= 48 else DEFAULT_BLEND_WEIGHTS["o3"]["49-72h"]
             )
             p50_o3 = cams_bc_o3 if pd.isna(last_obs_o3) else (w_o3 * float(last_obs_o3) + (1.0 - w_o3) * cams_bc_o3)
-            spread_o3 = max(2.0, (r_o3["p90"] - r_o3["p10"]) / 2.0)
+            spread_o3 = max(2.0, (r_o3["p90"] - r_o3["p10"]) / 2.0) * lead_factor
             p10_o3 = max(0.0, p50_o3 - spread_o3)
-            p90_o3 = max(p50_o3, p50_o3 + spread_o3)
+            p90_o3 = p50_o3 + spread_o3
             o3_q = {"p10": round(p10_o3, 1), "p50": round(p50_o3, 1), "p90": round(p90_o3, 1)}
 
-            # --- NO2: Lead-aware blend (persistence + bias-corrected CAMS) ---
+            # NO2: Lead-blend with lead-scaled spread
             last_obs_no2 = row["last_obs_no2"]
             cams_no2 = float(row["driver_no2"])
             r_no2 = residual_stats["no2"]
@@ -333,10 +375,43 @@ def generate_forecast_for_station(
                 DEFAULT_BLEND_WEIGHTS["no2"]["25-48h"] if lead_h <= 48 else DEFAULT_BLEND_WEIGHTS["no2"]["49-72h"]
             )
             p50_no2 = cams_bc_no2 if pd.isna(last_obs_no2) else (w_no2 * float(last_obs_no2) + (1.0 - w_no2) * cams_bc_no2)
-            spread_no2 = max(3.0, (r_no2["p90"] - r_no2["p10"]) / 2.0)
+            spread_no2 = max(3.0, (r_no2["p90"] - r_no2["p10"]) / 2.0) * lead_factor
             p10_no2 = max(0.0, p50_no2 - spread_no2)
-            p90_no2 = max(p50_no2, p50_no2 + spread_no2)
+            p90_no2 = p50_no2 + spread_no2
             no2_q = {"p10": round(p10_no2, 1), "p50": round(p50_no2, 1), "p90": round(p90_no2, 1)}
+        else:
+            # --- GUARD FAILED: Output raw CAMS with wide lead-dependent default band ---
+            cams_25 = float(row["driver_pm25"])
+            hw_25 = max(25.0, 0.40 * cams_25) * lead_factor
+            pm25_q = {
+                "p10": round(max(0.0, cams_25 - hw_25), 1),
+                "p50": round(cams_25, 1),
+                "p90": round(cams_25 + hw_25, 1),
+            }
+
+            cams_10 = float(row["driver_pm10"])
+            hw_10 = max(50.0, 0.45 * cams_10) * lead_factor
+            pm10_q = {
+                "p10": round(max(0.0, cams_10 - hw_10), 1),
+                "p50": round(cams_10, 1),
+                "p90": round(cams_10 + hw_10, 1),
+            }
+
+            cams_o3 = float(row["driver_o3"])
+            hw_o3 = max(10.0, 0.35 * cams_o3) * lead_factor
+            o3_q = {
+                "p10": round(max(0.0, cams_o3 - hw_o3), 1),
+                "p50": round(cams_o3, 1),
+                "p90": round(cams_o3 + hw_o3, 1),
+            }
+
+            cams_no2 = float(row["driver_no2"])
+            hw_no2 = max(10.0, 0.35 * cams_no2) * lead_factor
+            no2_q = {
+                "p10": round(max(0.0, cams_no2 - hw_no2), 1),
+                "p50": round(cams_no2, 1),
+                "p90": round(cams_no2 + hw_no2, 1),
+            }
 
         # Cache for p_severe calculation
         p25_lead_map[lead_h] = pm25_q
@@ -352,6 +427,14 @@ def generate_forecast_for_station(
         aqi_p50 = max(aqi_p10, aqi_p50 if aqi_p50 is not None else aqi_p10)
         aqi_p90 = max(aqi_p50, aqi_p90 if aqi_p90 is not None else aqi_p50)
 
+        # Look up matching actual observation if available (for replay mode)
+        obs_row = obs_map.get((station_id, row["valid_time"]), {})
+        p25_act = obs_row.get("pm25")
+        p10_act = obs_row.get("pm10")
+        o3_act = obs_row.get("o3")
+        no2_act = obs_row.get("no2")
+        aqi_act, cat_act = convert_pm_to_aqi(p25_act, p10_act, breakpoints_df=breakpoints_df)
+
         hourly_records.append({
             "valid_time": v_time,
             "lead_h": lead_h,
@@ -365,9 +448,17 @@ def generate_forecast_for_station(
                 "p90": round(float(aqi_p90), 1),
             },
             "category": cat_p50,
+            "observed": {
+                "pm25": round(float(p25_act), 1) if pd.notna(p25_act) else None,
+                "pm10": round(float(p10_act), 1) if pd.notna(p10_act) else None,
+                "o3": round(float(o3_act), 1) if pd.notna(o3_act) else None,
+                "no2": round(float(no2_act), 1) if pd.notna(no2_act) else None,
+                "aqi": round(float(aqi_act), 1) if pd.notna(aqi_act) else None,
+                "category": cat_act,
+            },
         })
 
-    # Compute P(Severe) at 24h, 48h, 72h from bias-corrected forecast + residual spread
+    # Compute P(Severe) at 24h, 48h, 72h
     p_sev_24 = compute_p_severe_for_lead(
         p25_lead_map.get(24, p25_lead_map.get(max(p25_lead_map.keys()))),
         p10_lead_map.get(24, p10_lead_map.get(max(p10_lead_map.keys()))),
@@ -389,6 +480,9 @@ def generate_forecast_for_station(
         "name": station_name,
         "lat": lat,
         "lon": lon,
+        "bias_correction": bias_status,
+        "newest_obs_age_hours": obs_age_h,
+        "recent_obs_count_7d": obs_count_7d,
         "p_severe_type": "uncalibrated risk indicator",
         "o3_no2_label": "experimental, single-station",
         "hourly": hourly_records,
@@ -404,6 +498,7 @@ def run_72h_forecast(
     stations_csv: Union[str, Path] = DEFAULT_STATIONS_CSV,
     models_dir: Union[str, Path] = MODELS_DIR,
     output_path: Union[str, Path] = DEFAULT_OUTPUT_JSON,
+    replay_output_path: Union[str, Path] = DEFAULT_REPLAY_JSON,
     issue_time: Optional[Union[str, pd.Timestamp]] = None,
     driver_dfs: Optional[Dict[str, pd.DataFrame]] = None,
     model_type: str = "blend",
@@ -450,6 +545,8 @@ def run_72h_forecast(
     print("=" * 76)
 
     station_outputs = []
+    has_replay_observations = False
+
     for _, row in stations_df.iterrows():
         st_id = str(row["id"])
         st_name = str(row["name"])
@@ -457,6 +554,13 @@ def run_72h_forecast(
         lon = float(row["lon"])
 
         st_driver_df = driver_dfs.get(st_id) if driver_dfs else None
+        if st_driver_df is None and hist_drivers_df is not None:
+            # Check if hist_drivers_df covers the required forward forecast window
+            st_hist = hist_drivers_df[hist_drivers_df["station_id"] == st_id]
+            fwd_times = [iss_ts + pd.Timedelta(hours=h) for h in range(1, 73)]
+            in_hist = st_hist[st_hist["timestamp"].isin(fwd_times)]
+            if len(in_hist) >= 72:
+                st_driver_df = in_hist.copy()
 
         print(f"\nGenerating 72h forecast for station '{st_id}' ({st_name})...")
         st_fc = generate_forecast_for_station(
@@ -474,7 +578,16 @@ def run_72h_forecast(
             model_type=model_type,
         )
         station_outputs.append(st_fc)
+
+        # Check if actual observations exist for replay mode
+        valid_obs_in_window = sum(1 for h in st_fc["hourly"] if h["observed"]["pm25"] is not None)
+        if valid_obs_in_window > 0:
+            has_replay_observations = True
+
+        bias_flag = st_fc["bias_correction"]
+        age_str = f"{st_fc['newest_obs_age_hours']:.1f}h" if st_fc['newest_obs_age_hours'] is not None else "None"
         print(f"  -> Generated {len(st_fc['hourly'])} hourly forecasts.")
+        print(f"  -> Bias Correction: {bias_flag} (Recent 7d obs: {st_fc['recent_obs_count_7d']}, Newest obs age: {age_str})")
         print(f"  -> P(Severe) [uncalibrated]: 24h={st_fc['p_severe']['24h']:.2f}, 48h={st_fc['p_severe']['48h']:.2f}, 72h={st_fc['p_severe']['72h']:.2f}")
 
     forecast_json_obj = {
@@ -486,6 +599,7 @@ def run_72h_forecast(
         ),
         "p_severe_type": "uncalibrated risk indicator",
         "p_severe_disclosure": "Uncalibrated risk indicator; zero skill claimed over climatological reference base rate.",
+        "uncertainty_heuristic": "Prediction intervals widen with lead horizon via (1.0 + 0.004 * lead_h)",
         "notes": {
             "pm25": "7-day rolling bias-corrected CAMS (p50 with empirical residual quantiles for p10/p90)",
             "pm10": "7-day rolling bias-corrected CAMS (p50 with empirical residual quantiles for p10/p90)",
@@ -495,13 +609,21 @@ def run_72h_forecast(
         "stations": station_outputs,
     }
 
-    # Sanitize and write data/forecast.json
+    # Sanitize and write primary forecast JSON (data/forecast.json)
     out_file = Path(output_path)
     out_file.parent.mkdir(parents=True, exist_ok=True)
     with open(out_file, "w", encoding="utf-8") as fp:
         json.dump(sanitize_for_json(forecast_json_obj), fp, indent=2)
 
     print(f"\nSuccessfully wrote forecast to {out_file} ({out_file.stat().st_size / 1024:.1f} KB)")
+
+    # If replaying a period with actual observations, write data/forecast_replay.json
+    if has_replay_observations:
+        replay_file = Path(replay_output_path)
+        replay_file.parent.mkdir(parents=True, exist_ok=True)
+        with open(replay_file, "w", encoding="utf-8") as fp:
+            json.dump(sanitize_for_json(forecast_json_obj), fp, indent=2)
+        print(f"Successfully wrote replay forecast with matching observations to {replay_file} ({replay_file.stat().st_size / 1024:.1f} KB)")
 
     # Keep site/data.json updated if present
     if SITE_DATA_JSON.exists():
@@ -522,7 +644,8 @@ def main():
     parser = argparse.ArgumentParser(description="Run VAAYU 72-Hour Forecast System")
     parser.add_argument("--stations", default=DEFAULT_STATIONS_CSV, help="Path to stations.csv")
     parser.add_argument("--output", default=DEFAULT_OUTPUT_JSON, help="Path to output forecast.json")
-    parser.add_argument("--issue-time", default=None, help="Optional issue time (ISO8601 string)")
+    parser.add_argument("--replay-output", default=DEFAULT_REPLAY_JSON, help="Path to output forecast_replay.json")
+    parser.add_argument("--issue-time", default=None, help="Optional issue time (ISO8601 string, e.g. '2025-11-12 20:00')")
     parser.add_argument(
         "--model",
         choices=["blend", "lgbm"],
@@ -534,6 +657,7 @@ def main():
     run_72h_forecast(
         stations_csv=args.stations,
         output_path=args.output,
+        replay_output_path=args.replay_output,
         issue_time=args.issue_time,
         model_type=args.model,
     )

@@ -547,3 +547,143 @@ def test_forecast_json_uncalibrated_risk_label():
         assert "experimental, single-station" in st.get("o3_no2_label", "").lower()
 
 
+# ==============================================================================
+# 13. Staleness Guard & Replay Mode Tests
+# ==============================================================================
+
+def test_staleness_guard_unavailable_when_no_recent_obs():
+    """Verify that when <6 recent observations exist in trailing 7 days, staleness guard triggers."""
+    from run_forecast import inspect_station_staleness_and_residuals, generate_forecast_for_station
+
+    # Case A: Synthetic dataframe with 0 observations in trailing 7 days
+    issue_t = pd.Timestamp("2026-09-30 20:00:00", tz="Asia/Kolkata")
+    # Only old obs from 2025
+    old_obs = pd.DataFrame([
+        {
+            "timestamp": pd.Timestamp("2025-11-01 12:00:00", tz="Asia/Kolkata"),
+            "station_id": "mock_station",
+            "pm25": 120.0,
+            "pm10": 200.0,
+            "o3": 20.0,
+            "no2": 40.0,
+        }
+    ])
+
+    status, age_h, count_7d, stats = inspect_station_staleness_and_residuals(
+        station_id="mock_station",
+        issue_time=issue_t,
+        obs_df=old_obs,
+        min_periods=6,
+    )
+
+    assert status == "unavailable_no_recent_obs"
+    assert count_7d == 0
+    assert age_h is not None and age_h > 7000.0
+
+    # Case B: Only 3 recent observations (< 6 threshold)
+    recent_times = [issue_t - pd.Timedelta(hours=h) for h in [2, 5, 8]]
+    few_obs = pd.DataFrame([
+        {
+            "timestamp": t,
+            "station_id": "mock_station",
+            "pm25": 100.0,
+            "pm10": 180.0,
+            "o3": 25.0,
+            "no2": 45.0,
+        }
+        for t in recent_times
+    ])
+    combined_obs = pd.concat([old_obs, few_obs], ignore_index=True)
+
+    status_few, age_h_few, count_few, _ = inspect_station_staleness_and_residuals(
+        station_id="mock_station",
+        issue_time=issue_t,
+        obs_df=combined_obs,
+        min_periods=6,
+    )
+    assert status_few == "unavailable_no_recent_obs"
+    assert count_few == 3
+    assert age_h_few == 2.0
+
+
+def test_staleness_guard_raw_cams_fallback_and_uncertainty_growth():
+    """Verify that if guard fails, p50 is raw CAMS and uncertainty band expands with lead_h."""
+    from run_forecast import generate_forecast_for_station
+
+    issue_t = pd.Timestamp("2026-09-30 20:00:00", tz="Asia/Kolkata")
+    empty_obs = pd.DataFrame(columns=["timestamp", "station_id", "pm25", "pm10", "no2", "o3"])
+
+    # Create mock forward driver dataframe with known constant CAMS
+    drv_times = [issue_t + pd.Timedelta(hours=h) for h in range(1, 73)]
+    drv_rows = []
+    for t in drv_times:
+        drv_rows.append({
+            "timestamp": t,
+            "station_id": "mock_station",
+            "pm2_5": 80.0,
+            "pm10": 160.0,
+            "ozone": 30.0,
+            "nitrogen_dioxide": 50.0,
+            "temperature_2m": 22.0,
+            "relative_humidity_2m": 60.0,
+            "wind_speed_10m": 2.5,
+            "wind_direction_10m": 270.0,
+            "boundary_layer_height": 500.0,
+            "surface_pressure": 1010.0,
+        })
+    drv_df = pd.DataFrame(drv_rows)
+
+    fc = generate_forecast_for_station(
+        station_id="mock_station",
+        station_name="Mock Station",
+        lat=28.6,
+        lon=77.3,
+        issue_time=issue_t,
+        obs_df=empty_obs,
+        driver_df=drv_df,
+        max_lead_h=72,
+        model_type="blend",
+    )
+
+    assert fc["bias_correction"] == "unavailable_no_recent_obs"
+    assert fc["recent_obs_count_7d"] == 0
+    assert fc["newest_obs_age_hours"] is None
+
+    # Check raw CAMS p50
+    h1 = fc["hourly"][0]
+    h72 = fc["hourly"][71]
+    assert h1["pm25"]["p50"] == 80.0
+    assert h72["pm25"]["p50"] == 80.0
+    assert h1["pm10"]["p50"] == 160.0
+    assert h72["pm10"]["p50"] == 160.0
+
+    # Check uncertainty growth with lead time
+    # lead_h=1 factor = 1.004; lead_h=72 factor = 1 + 0.004 * 72 = 1.288
+    band_1 = h1["pm25"]["p90"] - h1["pm25"]["p10"]
+    band_72 = h72["pm25"]["p90"] - h72["pm25"]["p10"]
+    assert band_72 > band_1
+    expected_ratio = (1.0 + 0.004 * 72) / (1.0 + 0.004 * 1)
+    actual_ratio = band_72 / band_1
+    assert pytest.approx(actual_ratio, rel=1e-2) == expected_ratio
+
+
+def test_staleness_guard_applied_when_obs_available():
+    """Verify that when >=6 observations exist, bias_correction is applied."""
+    from run_forecast import inspect_station_staleness_and_residuals
+
+    issue_t = pd.Timestamp("2025-11-12 20:00:00", tz="Asia/Kolkata")
+    from forecast_model import load_all_observations
+    obs_df = load_all_observations()
+
+    status, age_h, count_7d, stats = inspect_station_staleness_and_residuals(
+        station_id="anand_vihar_new_delhi_dpcc",
+        issue_time=issue_t,
+        obs_df=obs_df,
+        min_periods=6,
+    )
+    assert status == "applied"
+    assert count_7d >= 6
+    assert age_h is not None and age_h <= 24.0
+
+
+
