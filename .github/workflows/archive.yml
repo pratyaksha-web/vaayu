@@ -1,0 +1,62 @@
+name: Archive Forecasts and Observations
+
+on:
+  schedule:
+    # Run every 6 hours at minute 0 (00:00, 06:00, 12:00, 18:00 UTC)
+    - cron: '0 */6 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  archive:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Execute Forecast Archiver
+        env:
+          OPENAQ_API_KEY: ${{ secrets.OPENAQ_API_KEY }}
+        run: |
+          python archive_forecasts.py --format parquet
+
+      - name: Commit and push to data-archive branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          # Create or switch to the isolated data-archive branch (never main)
+          if git ls-remote --exit-code --heads origin data-archive; then
+            git fetch origin data-archive:data-archive
+            git checkout data-archive
+          else
+            git checkout --orphan data-archive
+            git rm -rf . || true
+          fi
+
+          # Stage only the archived forecast and observation datasets
+          mkdir -p data/archive/forecasts data/archive/obs
+          git add -f data/archive/
+
+          if git diff --staged --quiet; then
+            echo "No new archives to commit."
+          else
+            TIMESTAMP=$(date -u +"%Y-%m-%d %H:%M UTC")
+            git commit -m "Archive forecast cycle and observations: ${TIMESTAMP} [skip ci]"
+            git push origin data-archive
+          fi

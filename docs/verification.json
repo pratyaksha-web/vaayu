@@ -1,0 +1,1596 @@
+{
+  "evaluation_metadata": {
+    "evaluation_date": "2026-09-30T16:38:07.616621+00:00",
+    "status_label": "hindcast with analysis drivers",
+    "held_out_winter": "2025-10-01 to 2026-02-28",
+    "training_winters": [
+      "2020-10-01 to 2021-02-28",
+      "2021-10-01 to 2022-02-28",
+      "2023-10-01 to 2024-02-29"
+    ],
+    "stations_evaluated": [
+      "anand_vihar_new_delhi_dpcc",
+      "indirapuram_ghaziabad_uppcb",
+      "sector_11_faridabad_hspcb"
+    ],
+    "total_test_samples": 31968,
+    "verifiable_hours": 23559,
+    "severe_hours_observed": 5408,
+    "climatology_severe_rate": 0.3803
+  },
+  "multi_winter_audit": {
+    "2020-21": {
+      "calendar_hours": 3624,
+      "period": "2020-10-01 to 2021-02-28",
+      "stations": {
+        "anand_vihar_new_delhi_dpcc": {
+          "pm25": {
+            "valid_hours": 0,
+            "missing_hours": 3624,
+            "valid_pct": 0.0
+          },
+          "pm10": {
+            "valid_hours": 0,
+            "missing_hours": 3624,
+            "valid_pct": 0.0
+          },
+          "o3": {
+            "valid_hours": 1384,
+            "missing_hours": 2240,
+            "valid_pct": 38.2
+          },
+          "no2": {
+            "valid_hours": 1381,
+            "missing_hours": 2243,
+            "valid_pct": 38.1
+          }
+        },
+        "indirapuram_ghaziabad_uppcb": {
+          "pm25": {
+            "valid_hours": 73,
+            "missing_hours": 3551,
+            "valid_pct": 2.0
+          },
+          "pm10": {
+            "valid_hours": 71,
+            "missing_hours": 3553,
+            "valid_pct": 2.0
+          },
+          "o3": {
+            "valid_hours": 0,
+            "missing_hours": 3624,
+            "valid_pct": 0.0
+          },
+          "no2": {
+            "valid_hours": 0,
+            "missing_hours": 3624,
+            "valid_pct": 0.0
+          }
+        },
+        "sector_11_faridabad_hspcb": {
+          "pm25": {
+            "valid_hours": 66,
+            "missing_hours": 3558,
+            "valid_pct": 1.8
+          },
+          "pm10": {
+            "valid_hours": 66,
+            "missing_hours": 3558,
+            "valid_pct": 1.8
+          },
+          "o3": {
+            "valid_hours": 0,
+            "missing_hours": 3624,
+            "valid_pct": 0.0
+          },
+          "no2": {
+            "valid_hours": 0,
+            "missing_hours": 3624,
+            "valid_pct": 0.0
+          }
+        }
+      }
+    },
+    "2021-22": {
+      "calendar_hours": 3624,
+      "period": "2021-10-01 to 2022-02-28",
+      "stations": {
+        "anand_vihar_new_delhi_dpcc": {
+          "pm25": {
+            "valid_hours": 0,
+            "missing_hours": 3624,
+            "valid_pct": 0.0
+          },
+          "pm10": {
+            "valid_hours": 0,
+            "missing_hours": 3624,
+            "valid_pct": 0.0
+          },
+          "o3": {
+            "valid_hours": 2132,
+            "missing_hours": 1492,
+            "valid_pct": 58.8
+          },
+          "no2": {
+            "valid_hours": 2113,
+            "missing_hours": 1511,
+            "valid_pct": 58.3
+          }
+        },
+        "indirapuram_ghaziabad_uppcb": {
+          "pm25": {
+            "valid_hours": 1,
+            "missing_hours": 3623,
+            "valid_pct": 0.0
+          },
+          "pm10": {
+            "valid_hours": 1,
+            "missing_hours": 3623,
+            "valid_pct": 0.0
+          },
+          "o3": {
+            "valid_hours": 0,
+            "missing_hours": 3624,
+            "valid_pct": 0.0
+          },
+          "no2": {
+            "valid_hours": 0,
+            "missing_hours": 3624,
+            "valid_pct": 0.0
+          }
+        },
+        "sector_11_faridabad_hspcb": {
+          "pm25": {
+            "valid_hours": 100,
+            "missing_hours": 3524,
+            "valid_pct": 2.8
+          },
+          "pm10": {
+            "valid_hours": 98,
+            "missing_hours": 3526,
+            "valid_pct": 2.7
+          },
+          "o3": {
+            "valid_hours": 0,
+            "missing_hours": 3624,
+            "valid_pct": 0.0
+          },
+          "no2": {
+            "valid_hours": 0,
+            "missing_hours": 3624,
+            "valid_pct": 0.0
+          }
+        }
+      }
+    },
+    "2022-23": {
+      "calendar_hours": 3624,
+      "period": "2022-10-01 to 2023-02-28",
+      "stations": {
+        "anand_vihar_new_delhi_dpcc": {
+          "pm25": {
+            "valid_hours": 0,
+            "missing_hours": 3624,
+            "valid_pct": 0.0
+          },
+          "pm10": {
+            "valid_hours": 0,
+            "missing_hours": 3624,
+            "valid_pct": 0.0
+          },
+          "o3": {
+            "valid_hours": 1399,
+            "missing_hours": 2225,
+            "valid_pct": 38.6
+          },
+          "no2": {
+            "valid_hours": 1314,
+            "missing_hours": 2310,
+            "valid_pct": 36.3
+          }
+        },
+        "indirapuram_ghaziabad_uppcb": {
+          "pm25": {
+            "valid_hours": 0,
+            "missing_hours": 3624,
+            "valid_pct": 0.0
+          },
+          "pm10": {
+            "valid_hours": 0,
+            "missing_hours": 3624,
+            "valid_pct": 0.0
+          },
+          "o3": {
+            "valid_hours": 0,
+            "missing_hours": 3624,
+            "valid_pct": 0.0
+          },
+          "no2": {
+            "valid_hours": 0,
+            "missing_hours": 3624,
+            "valid_pct": 0.0
+          }
+        },
+        "sector_11_faridabad_hspcb": {
+          "pm25": {
+            "valid_hours": 0,
+            "missing_hours": 3624,
+            "valid_pct": 0.0
+          },
+          "pm10": {
+            "valid_hours": 0,
+            "missing_hours": 3624,
+            "valid_pct": 0.0
+          },
+          "o3": {
+            "valid_hours": 0,
+            "missing_hours": 3624,
+            "valid_pct": 0.0
+          },
+          "no2": {
+            "valid_hours": 0,
+            "missing_hours": 3624,
+            "valid_pct": 0.0
+          }
+        }
+      }
+    },
+    "2023-24": {
+      "calendar_hours": 3648,
+      "period": "2023-10-01 to 2024-02-29",
+      "stations": {
+        "anand_vihar_new_delhi_dpcc": {
+          "pm25": {
+            "valid_hours": 0,
+            "missing_hours": 3648,
+            "valid_pct": 0.0
+          },
+          "pm10": {
+            "valid_hours": 0,
+            "missing_hours": 3648,
+            "valid_pct": 0.0
+          },
+          "o3": {
+            "valid_hours": 1982,
+            "missing_hours": 1666,
+            "valid_pct": 54.3
+          },
+          "no2": {
+            "valid_hours": 1723,
+            "missing_hours": 1925,
+            "valid_pct": 47.2
+          }
+        },
+        "indirapuram_ghaziabad_uppcb": {
+          "pm25": {
+            "valid_hours": 0,
+            "missing_hours": 3648,
+            "valid_pct": 0.0
+          },
+          "pm10": {
+            "valid_hours": 0,
+            "missing_hours": 3648,
+            "valid_pct": 0.0
+          },
+          "o3": {
+            "valid_hours": 0,
+            "missing_hours": 3648,
+            "valid_pct": 0.0
+          },
+          "no2": {
+            "valid_hours": 0,
+            "missing_hours": 3648,
+            "valid_pct": 0.0
+          }
+        },
+        "sector_11_faridabad_hspcb": {
+          "pm25": {
+            "valid_hours": 0,
+            "missing_hours": 3648,
+            "valid_pct": 0.0
+          },
+          "pm10": {
+            "valid_hours": 0,
+            "missing_hours": 3648,
+            "valid_pct": 0.0
+          },
+          "o3": {
+            "valid_hours": 0,
+            "missing_hours": 3648,
+            "valid_pct": 0.0
+          },
+          "no2": {
+            "valid_hours": 0,
+            "missing_hours": 3648,
+            "valid_pct": 0.0
+          }
+        }
+      }
+    },
+    "2024-25": {
+      "calendar_hours": 3624,
+      "period": "2024-10-01 to 2025-02-28",
+      "stations": {
+        "anand_vihar_new_delhi_dpcc": {
+          "pm25": {
+            "valid_hours": 0,
+            "missing_hours": 3624,
+            "valid_pct": 0.0
+          },
+          "pm10": {
+            "valid_hours": 0,
+            "missing_hours": 3624,
+            "valid_pct": 0.0
+          },
+          "o3": {
+            "valid_hours": 1051,
+            "missing_hours": 2573,
+            "valid_pct": 29.0
+          },
+          "no2": {
+            "valid_hours": 1029,
+            "missing_hours": 2595,
+            "valid_pct": 28.4
+          }
+        },
+        "indirapuram_ghaziabad_uppcb": {
+          "pm25": {
+            "valid_hours": 0,
+            "missing_hours": 3624,
+            "valid_pct": 0.0
+          },
+          "pm10": {
+            "valid_hours": 0,
+            "missing_hours": 3624,
+            "valid_pct": 0.0
+          },
+          "o3": {
+            "valid_hours": 0,
+            "missing_hours": 3624,
+            "valid_pct": 0.0
+          },
+          "no2": {
+            "valid_hours": 0,
+            "missing_hours": 3624,
+            "valid_pct": 0.0
+          }
+        },
+        "sector_11_faridabad_hspcb": {
+          "pm25": {
+            "valid_hours": 0,
+            "missing_hours": 3624,
+            "valid_pct": 0.0
+          },
+          "pm10": {
+            "valid_hours": 0,
+            "missing_hours": 3624,
+            "valid_pct": 0.0
+          },
+          "o3": {
+            "valid_hours": 0,
+            "missing_hours": 3624,
+            "valid_pct": 0.0
+          },
+          "no2": {
+            "valid_hours": 0,
+            "missing_hours": 3624,
+            "valid_pct": 0.0
+          }
+        }
+      }
+    },
+    "2025-26": {
+      "calendar_hours": 3624,
+      "period": "2025-10-01 to 2026-02-28",
+      "stations": {
+        "anand_vihar_new_delhi_dpcc": {
+          "pm25": {
+            "valid_hours": 2828,
+            "missing_hours": 796,
+            "valid_pct": 78.0
+          },
+          "pm10": {
+            "valid_hours": 2818,
+            "missing_hours": 806,
+            "valid_pct": 77.8
+          },
+          "o3": {
+            "valid_hours": 2144,
+            "missing_hours": 1480,
+            "valid_pct": 59.2
+          },
+          "no2": {
+            "valid_hours": 2197,
+            "missing_hours": 1427,
+            "valid_pct": 60.6
+          }
+        },
+        "indirapuram_ghaziabad_uppcb": {
+          "pm25": {
+            "valid_hours": 2717,
+            "missing_hours": 907,
+            "valid_pct": 75.0
+          },
+          "pm10": {
+            "valid_hours": 2798,
+            "missing_hours": 826,
+            "valid_pct": 77.2
+          },
+          "o3": {
+            "valid_hours": 0,
+            "missing_hours": 3624,
+            "valid_pct": 0.0
+          },
+          "no2": {
+            "valid_hours": 0,
+            "missing_hours": 3624,
+            "valid_pct": 0.0
+          }
+        },
+        "sector_11_faridabad_hspcb": {
+          "pm25": {
+            "valid_hours": 2364,
+            "missing_hours": 1260,
+            "valid_pct": 65.2
+          },
+          "pm10": {
+            "valid_hours": 2378,
+            "missing_hours": 1246,
+            "valid_pct": 65.6
+          },
+          "o3": {
+            "valid_hours": 0,
+            "missing_hours": 3624,
+            "valid_pct": 0.0
+          },
+          "no2": {
+            "valid_hours": 0,
+            "missing_hours": 3624,
+            "valid_pct": 0.0
+          }
+        }
+      }
+    }
+  },
+  "imputation_audit": {
+    "calendar_hours_per_station": 3624,
+    "stations": {
+      "anand_vihar_new_delhi_dpcc": {
+        "pm25": {
+          "valid_hours": 2828,
+          "excluded_missing_hours": 796,
+          "missing_pct": 22.0
+        },
+        "pm10": {
+          "valid_hours": 2818,
+          "excluded_missing_hours": 806,
+          "missing_pct": 22.2
+        },
+        "o3": {
+          "valid_hours": 2144,
+          "excluded_missing_hours": 1480,
+          "missing_pct": 40.8
+        },
+        "no2": {
+          "valid_hours": 2197,
+          "excluded_missing_hours": 1427,
+          "missing_pct": 39.4
+        }
+      },
+      "indirapuram_ghaziabad_uppcb": {
+        "pm25": {
+          "valid_hours": 2717,
+          "excluded_missing_hours": 907,
+          "missing_pct": 25.0
+        },
+        "pm10": {
+          "valid_hours": 2798,
+          "excluded_missing_hours": 826,
+          "missing_pct": 22.8
+        },
+        "o3": {
+          "valid_hours": 0,
+          "excluded_missing_hours": 3624,
+          "missing_pct": 100.0
+        },
+        "no2": {
+          "valid_hours": 0,
+          "excluded_missing_hours": 3624,
+          "missing_pct": 100.0
+        }
+      },
+      "sector_11_faridabad_hspcb": {
+        "pm25": {
+          "valid_hours": 2364,
+          "excluded_missing_hours": 1260,
+          "missing_pct": 34.8
+        },
+        "pm10": {
+          "valid_hours": 2378,
+          "excluded_missing_hours": 1246,
+          "missing_pct": 34.4
+        },
+        "o3": {
+          "valid_hours": 0,
+          "excluded_missing_hours": 3624,
+          "missing_pct": 100.0
+        },
+        "no2": {
+          "valid_hours": 0,
+          "excluded_missing_hours": 3624,
+          "missing_pct": 100.0
+        }
+      }
+    }
+  },
+  "pollutants": {
+    "pm25": {
+      "1-24h": {
+        "n_samples": 7708,
+        "model": {
+          "mae": 84.08,
+          "rmse": 105.63,
+          "bias": 37.65,
+          "count": 7708
+        },
+        "raw_cams": {
+          "mae": 69.34,
+          "rmse": 100.52,
+          "bias": -51.26,
+          "count": 7708
+        },
+        "persistence": {
+          "mae": 74.93,
+          "rmse": 104.14,
+          "bias": 47.84,
+          "count": 7623
+        },
+        "climatology": {
+          "mae": 93.2,
+          "rmse": 126.98,
+          "bias": 22.44,
+          "count": 7708
+        },
+        "cams_bc": {
+          "mae": 48.72,
+          "rmse": 70.02,
+          "bias": -0.03,
+          "count": 7708
+        },
+        "lead_blend": {
+          "mae": 54.36,
+          "rmse": 74.94,
+          "bias": 23.39,
+          "count": 7708
+        },
+        "best_model": "Rolling CAMS BC",
+        "best_mae": 48.72,
+        "skill_vs_raw_mae_pct": -21.3,
+        "skill_bc_vs_raw_pct": 29.7,
+        "skill_blend_vs_raw_pct": 21.6,
+        "interval_coverage_80": {
+          "coverage_pct": 53.11,
+          "count": 7708
+        }
+      },
+      "25-48h": {
+        "n_samples": 7745,
+        "model": {
+          "mae": 84.31,
+          "rmse": 105.52,
+          "bias": 38.14,
+          "count": 7745
+        },
+        "raw_cams": {
+          "mae": 69.39,
+          "rmse": 100.28,
+          "bias": -51.4,
+          "count": 7745
+        },
+        "persistence": {
+          "mae": 85.87,
+          "rmse": 118.26,
+          "bias": 46.36,
+          "count": 7508
+        },
+        "climatology": {
+          "mae": 93.0,
+          "rmse": 126.58,
+          "bias": 22.43,
+          "count": 7745
+        },
+        "cams_bc": {
+          "mae": 50.52,
+          "rmse": 71.81,
+          "bias": -0.25,
+          "count": 7745
+        },
+        "lead_blend": {
+          "mae": 53.17,
+          "rmse": 73.77,
+          "bias": 10.79,
+          "count": 7745
+        },
+        "best_model": "Rolling CAMS BC",
+        "best_mae": 50.52,
+        "skill_vs_raw_mae_pct": -21.5,
+        "skill_bc_vs_raw_pct": 27.2,
+        "skill_blend_vs_raw_pct": 23.4,
+        "interval_coverage_80": {
+          "coverage_pct": 51.88,
+          "count": 7745
+        }
+      },
+      "49-72h": {
+        "n_samples": 7768,
+        "model": {
+          "mae": 84.61,
+          "rmse": 105.96,
+          "bias": 38.18,
+          "count": 7768
+        },
+        "raw_cams": {
+          "mae": 69.82,
+          "rmse": 100.79,
+          "bias": -51.98,
+          "count": 7768
+        },
+        "persistence": {
+          "mae": 90.75,
+          "rmse": 124.29,
+          "bias": 45.54,
+          "count": 7436
+        },
+        "climatology": {
+          "mae": 92.92,
+          "rmse": 126.59,
+          "bias": 22.02,
+          "count": 7768
+        },
+        "cams_bc": {
+          "mae": 51.57,
+          "rmse": 73.5,
+          "bias": -0.64,
+          "count": 7768
+        },
+        "lead_blend": {
+          "mae": 52.49,
+          "rmse": 74.0,
+          "bias": 3.63,
+          "count": 7768
+        },
+        "best_model": "Rolling CAMS BC",
+        "best_mae": 51.57,
+        "skill_vs_raw_mae_pct": -21.2,
+        "skill_bc_vs_raw_pct": 26.1,
+        "skill_blend_vs_raw_pct": 24.8,
+        "interval_coverage_80": {
+          "coverage_pct": 50.41,
+          "count": 7768
+        }
+      },
+      "1-72h": {
+        "n_samples": 23221,
+        "model": {
+          "mae": 84.33,
+          "rmse": 105.7,
+          "bias": 37.99,
+          "count": 23221
+        },
+        "raw_cams": {
+          "mae": 69.52,
+          "rmse": 100.53,
+          "bias": -51.55,
+          "count": 23221
+        },
+        "persistence": {
+          "mae": 83.78,
+          "rmse": 115.79,
+          "bias": 46.59,
+          "count": 22567
+        },
+        "climatology": {
+          "mae": 93.04,
+          "rmse": 126.72,
+          "bias": 22.3,
+          "count": 23221
+        },
+        "cams_bc": {
+          "mae": 50.27,
+          "rmse": 71.79,
+          "bias": -0.31,
+          "count": 23221
+        },
+        "lead_blend": {
+          "mae": 53.34,
+          "rmse": 74.24,
+          "bias": 12.58,
+          "count": 23221
+        },
+        "best_model": "Rolling CAMS BC",
+        "best_mae": 50.27,
+        "skill_vs_raw_mae_pct": -21.3,
+        "skill_bc_vs_raw_pct": 27.7,
+        "skill_blend_vs_raw_pct": 23.3,
+        "interval_coverage_80": {
+          "coverage_pct": 51.8,
+          "count": 23221
+        }
+      }
+    },
+    "pm10": {
+      "1-24h": {
+        "n_samples": 7796,
+        "model": {
+          "mae": 170.48,
+          "rmse": 216.29,
+          "bias": 104.64,
+          "count": 7796
+        },
+        "raw_cams": {
+          "mae": 191.44,
+          "rmse": 247.56,
+          "bias": -170.2,
+          "count": 7796
+        },
+        "persistence": {
+          "mae": 154.48,
+          "rmse": 213.01,
+          "bias": 107.68,
+          "count": 7724
+        },
+        "climatology": {
+          "mae": 185.7,
+          "rmse": 250.22,
+          "bias": 31.93,
+          "count": 7796
+        },
+        "cams_bc": {
+          "mae": 102.02,
+          "rmse": 139.44,
+          "bias": -1.22,
+          "count": 7796
+        },
+        "lead_blend": {
+          "mae": 112.29,
+          "rmse": 149.15,
+          "bias": 52.3,
+          "count": 7796
+        },
+        "best_model": "Rolling CAMS BC",
+        "best_mae": 102.02,
+        "skill_vs_raw_mae_pct": 10.9,
+        "skill_bc_vs_raw_pct": 46.7,
+        "skill_blend_vs_raw_pct": 41.3,
+        "interval_coverage_80": {
+          "coverage_pct": 61.99,
+          "count": 7796
+        }
+      },
+      "25-48h": {
+        "n_samples": 7833,
+        "model": {
+          "mae": 172.63,
+          "rmse": 218.46,
+          "bias": 105.86,
+          "count": 7833
+        },
+        "raw_cams": {
+          "mae": 191.76,
+          "rmse": 247.52,
+          "bias": -169.86,
+          "count": 7833
+        },
+        "persistence": {
+          "mae": 172.46,
+          "rmse": 236.06,
+          "bias": 105.87,
+          "count": 7614
+        },
+        "climatology": {
+          "mae": 185.35,
+          "rmse": 249.54,
+          "bias": 31.98,
+          "count": 7833
+        },
+        "cams_bc": {
+          "mae": 108.03,
+          "rmse": 145.56,
+          "bias": -1.49,
+          "count": 7833
+        },
+        "lead_blend": {
+          "mae": 111.17,
+          "rmse": 146.88,
+          "bias": 24.12,
+          "count": 7833
+        },
+        "best_model": "Rolling CAMS BC",
+        "best_mae": 108.03,
+        "skill_vs_raw_mae_pct": 10.0,
+        "skill_bc_vs_raw_pct": 43.7,
+        "skill_blend_vs_raw_pct": 42.0,
+        "interval_coverage_80": {
+          "coverage_pct": 60.59,
+          "count": 7833
+        }
+      },
+      "49-72h": {
+        "n_samples": 7856,
+        "model": {
+          "mae": 173.73,
+          "rmse": 220.04,
+          "bias": 105.14,
+          "count": 7856
+        },
+        "raw_cams": {
+          "mae": 193.07,
+          "rmse": 249.01,
+          "bias": -171.24,
+          "count": 7856
+        },
+        "persistence": {
+          "mae": 181.34,
+          "rmse": 244.58,
+          "bias": 104.05,
+          "count": 7544
+        },
+        "climatology": {
+          "mae": 185.34,
+          "rmse": 249.68,
+          "bias": 30.95,
+          "count": 7856
+        },
+        "cams_bc": {
+          "mae": 111.95,
+          "rmse": 151.18,
+          "bias": -3.12,
+          "count": 7856
+        },
+        "lead_blend": {
+          "mae": 112.87,
+          "rmse": 150.37,
+          "bias": 6.89,
+          "count": 7856
+        },
+        "best_model": "Rolling CAMS BC",
+        "best_mae": 111.95,
+        "skill_vs_raw_mae_pct": 10.0,
+        "skill_bc_vs_raw_pct": 42.0,
+        "skill_blend_vs_raw_pct": 41.5,
+        "interval_coverage_80": {
+          "coverage_pct": 59.78,
+          "count": 7856
+        }
+      },
+      "1-72h": {
+        "n_samples": 23485,
+        "model": {
+          "mae": 172.28,
+          "rmse": 218.27,
+          "bias": 105.21,
+          "count": 23485
+        },
+        "raw_cams": {
+          "mae": 192.09,
+          "rmse": 248.03,
+          "bias": -170.43,
+          "count": 23485
+        },
+        "persistence": {
+          "mae": 169.32,
+          "rmse": 231.47,
+          "bias": 105.88,
+          "count": 22882
+        },
+        "climatology": {
+          "mae": 185.46,
+          "rmse": 249.81,
+          "bias": 31.62,
+          "count": 23485
+        },
+        "cams_bc": {
+          "mae": 107.35,
+          "rmse": 145.49,
+          "bias": -1.95,
+          "count": 23485
+        },
+        "lead_blend": {
+          "mae": 112.11,
+          "rmse": 148.81,
+          "bias": 27.71,
+          "count": 23485
+        },
+        "best_model": "Rolling CAMS BC",
+        "best_mae": 107.35,
+        "skill_vs_raw_mae_pct": 10.3,
+        "skill_bc_vs_raw_pct": 44.1,
+        "skill_blend_vs_raw_pct": 41.6,
+        "interval_coverage_80": {
+          "coverage_pct": 60.78,
+          "count": 23485
+        }
+      }
+    },
+    "o3": {
+      "1-24h": {
+        "n_samples": 2143,
+        "model": {
+          "mae": 11.02,
+          "rmse": 16.66,
+          "bias": -1.39,
+          "count": 2143
+        },
+        "raw_cams": {
+          "mae": 71.23,
+          "rmse": 90.68,
+          "bias": 70.28,
+          "count": 2143
+        },
+        "persistence": {
+          "mae": 5.0,
+          "rmse": 11.18,
+          "bias": -2.37,
+          "count": 2143
+        },
+        "climatology": {
+          "mae": 9.41,
+          "rmse": 13.84,
+          "bias": -6.96,
+          "count": 2143
+        },
+        "cams_bc": {
+          "mae": 30.69,
+          "rmse": 46.92,
+          "bias": 15.71,
+          "count": 2143
+        },
+        "lead_blend": {
+          "mae": 5.0,
+          "rmse": 11.18,
+          "bias": -2.37,
+          "count": 2143
+        },
+        "best_model": "Lead Blend",
+        "best_mae": 5.0,
+        "skill_vs_raw_mae_pct": 84.5,
+        "skill_bc_vs_raw_pct": 56.9,
+        "skill_blend_vs_raw_pct": 93.0,
+        "interval_coverage_80": {
+          "coverage_pct": 67.29,
+          "count": 2143
+        }
+      },
+      "25-48h": {
+        "n_samples": 2120,
+        "model": {
+          "mae": 11.12,
+          "rmse": 16.78,
+          "bias": -1.47,
+          "count": 2120
+        },
+        "raw_cams": {
+          "mae": 70.97,
+          "rmse": 90.42,
+          "bias": 70.01,
+          "count": 2120
+        },
+        "persistence": {
+          "mae": 5.84,
+          "rmse": 11.63,
+          "bias": -2.47,
+          "count": 2120
+        },
+        "climatology": {
+          "mae": 9.46,
+          "rmse": 13.9,
+          "bias": -7.08,
+          "count": 2120
+        },
+        "cams_bc": {
+          "mae": 30.7,
+          "rmse": 47.25,
+          "bias": 15.54,
+          "count": 2120
+        },
+        "lead_blend": {
+          "mae": 5.84,
+          "rmse": 11.63,
+          "bias": -2.47,
+          "count": 2120
+        },
+        "best_model": "Lead Blend",
+        "best_mae": 5.84,
+        "skill_vs_raw_mae_pct": 84.3,
+        "skill_bc_vs_raw_pct": 56.7,
+        "skill_blend_vs_raw_pct": 91.8,
+        "interval_coverage_80": {
+          "coverage_pct": 66.13,
+          "count": 2120
+        }
+      },
+      "49-72h": {
+        "n_samples": 2099,
+        "model": {
+          "mae": 11.07,
+          "rmse": 16.75,
+          "bias": -1.68,
+          "count": 2099
+        },
+        "raw_cams": {
+          "mae": 70.45,
+          "rmse": 89.79,
+          "bias": 69.48,
+          "count": 2099
+        },
+        "persistence": {
+          "mae": 6.4,
+          "rmse": 12.1,
+          "bias": -2.63,
+          "count": 2099
+        },
+        "climatology": {
+          "mae": 9.48,
+          "rmse": 13.95,
+          "bias": -7.23,
+          "count": 2099
+        },
+        "cams_bc": {
+          "mae": 30.41,
+          "rmse": 46.59,
+          "bias": 15.06,
+          "count": 2099
+        },
+        "lead_blend": {
+          "mae": 6.4,
+          "rmse": 12.1,
+          "bias": -2.63,
+          "count": 2099
+        },
+        "best_model": "Lead Blend",
+        "best_mae": 6.4,
+        "skill_vs_raw_mae_pct": 84.3,
+        "skill_bc_vs_raw_pct": 56.8,
+        "skill_blend_vs_raw_pct": 90.9,
+        "interval_coverage_80": {
+          "coverage_pct": 65.22,
+          "count": 2099
+        }
+      },
+      "1-72h": {
+        "n_samples": 6362,
+        "model": {
+          "mae": 11.07,
+          "rmse": 16.73,
+          "bias": -1.51,
+          "count": 6362
+        },
+        "raw_cams": {
+          "mae": 70.89,
+          "rmse": 90.3,
+          "bias": 69.93,
+          "count": 6362
+        },
+        "persistence": {
+          "mae": 5.74,
+          "rmse": 11.64,
+          "bias": -2.49,
+          "count": 6362
+        },
+        "climatology": {
+          "mae": 9.45,
+          "rmse": 13.9,
+          "bias": -7.09,
+          "count": 6362
+        },
+        "cams_bc": {
+          "mae": 30.6,
+          "rmse": 46.92,
+          "bias": 15.44,
+          "count": 6362
+        },
+        "lead_blend": {
+          "mae": 5.74,
+          "rmse": 11.64,
+          "bias": -2.49,
+          "count": 6362
+        },
+        "best_model": "Lead Blend",
+        "best_mae": 5.74,
+        "skill_vs_raw_mae_pct": 84.4,
+        "skill_bc_vs_raw_pct": 56.8,
+        "skill_blend_vs_raw_pct": 91.9,
+        "interval_coverage_80": {
+          "coverage_pct": 66.22,
+          "count": 6362
+        }
+      }
+    },
+    "no2": {
+      "1-24h": {
+        "n_samples": 2196,
+        "model": {
+          "mae": 31.44,
+          "rmse": 44.6,
+          "bias": -20.49,
+          "count": 2196
+        },
+        "raw_cams": {
+          "mae": 46.92,
+          "rmse": 60.72,
+          "bias": -34.71,
+          "count": 2196
+        },
+        "persistence": {
+          "mae": 22.97,
+          "rmse": 35.91,
+          "bias": 4.94,
+          "count": 2196
+        },
+        "climatology": {
+          "mae": 31.24,
+          "rmse": 40.81,
+          "bias": -3.51,
+          "count": 2196
+        },
+        "cams_bc": {
+          "mae": 29.12,
+          "rmse": 40.47,
+          "bias": -0.84,
+          "count": 2196
+        },
+        "lead_blend": {
+          "mae": 20.7,
+          "rmse": 32.8,
+          "bias": 3.79,
+          "count": 2196
+        },
+        "best_model": "Lead Blend",
+        "best_mae": 20.7,
+        "skill_vs_raw_mae_pct": 33.0,
+        "skill_bc_vs_raw_pct": 37.9,
+        "skill_blend_vs_raw_pct": 55.9,
+        "interval_coverage_80": {
+          "coverage_pct": 49.23,
+          "count": 2196
+        }
+      },
+      "25-48h": {
+        "n_samples": 2172,
+        "model": {
+          "mae": 32.06,
+          "rmse": 45.07,
+          "bias": -20.68,
+          "count": 2172
+        },
+        "raw_cams": {
+          "mae": 47.26,
+          "rmse": 61.02,
+          "bias": -35.22,
+          "count": 2172
+        },
+        "persistence": {
+          "mae": 25.23,
+          "rmse": 38.08,
+          "bias": 4.79,
+          "count": 2172
+        },
+        "climatology": {
+          "mae": 31.06,
+          "rmse": 40.73,
+          "bias": -4.07,
+          "count": 2172
+        },
+        "cams_bc": {
+          "mae": 30.34,
+          "rmse": 42.23,
+          "bias": -1.15,
+          "count": 2172
+        },
+        "lead_blend": {
+          "mae": 22.9,
+          "rmse": 34.78,
+          "bias": 3.31,
+          "count": 2172
+        },
+        "best_model": "Lead Blend",
+        "best_mae": 22.9,
+        "skill_vs_raw_mae_pct": 32.2,
+        "skill_bc_vs_raw_pct": 35.8,
+        "skill_blend_vs_raw_pct": 51.5,
+        "interval_coverage_80": {
+          "coverage_pct": 49.13,
+          "count": 2172
+        }
+      },
+      "49-72h": {
+        "n_samples": 2148,
+        "model": {
+          "mae": 32.34,
+          "rmse": 45.32,
+          "bias": -21.04,
+          "count": 2148
+        },
+        "raw_cams": {
+          "mae": 47.63,
+          "rmse": 61.33,
+          "bias": -35.74,
+          "count": 2148
+        },
+        "persistence": {
+          "mae": 26.7,
+          "rmse": 39.57,
+          "bias": 4.63,
+          "count": 2148
+        },
+        "climatology": {
+          "mae": 30.83,
+          "rmse": 40.56,
+          "bias": -4.7,
+          "count": 2148
+        },
+        "cams_bc": {
+          "mae": 31.32,
+          "rmse": 43.77,
+          "bias": -1.35,
+          "count": 2148
+        },
+        "lead_blend": {
+          "mae": 23.93,
+          "rmse": 36.1,
+          "bias": 2.84,
+          "count": 2148
+        },
+        "best_model": "Lead Blend",
+        "best_mae": 23.93,
+        "skill_vs_raw_mae_pct": 32.1,
+        "skill_bc_vs_raw_pct": 34.2,
+        "skill_blend_vs_raw_pct": 49.8,
+        "interval_coverage_80": {
+          "coverage_pct": 49.86,
+          "count": 2148
+        }
+      },
+      "1-72h": {
+        "n_samples": 6516,
+        "model": {
+          "mae": 31.94,
+          "rmse": 44.99,
+          "bias": -20.73,
+          "count": 6516
+        },
+        "raw_cams": {
+          "mae": 47.27,
+          "rmse": 61.02,
+          "bias": -35.22,
+          "count": 6516
+        },
+        "persistence": {
+          "mae": 24.95,
+          "rmse": 37.87,
+          "bias": 4.79,
+          "count": 6516
+        },
+        "climatology": {
+          "mae": 31.04,
+          "rmse": 40.7,
+          "bias": -4.09,
+          "count": 6516
+        },
+        "cams_bc": {
+          "mae": 30.25,
+          "rmse": 42.16,
+          "bias": -1.11,
+          "count": 6516
+        },
+        "lead_blend": {
+          "mae": 22.5,
+          "rmse": 34.57,
+          "bias": 3.31,
+          "count": 6516
+        },
+        "best_model": "Lead Blend",
+        "best_mae": 22.5,
+        "skill_vs_raw_mae_pct": 32.4,
+        "skill_bc_vs_raw_pct": 36.0,
+        "skill_blend_vs_raw_pct": 52.4,
+        "interval_coverage_80": {
+          "coverage_pct": 49.4,
+          "count": 6516
+        }
+      }
+    }
+  },
+  "aqi_category": {
+    "1-24h": {
+      "valid_hours": 7820,
+      "model": {
+        "exact_accuracy_pct": 31.61,
+        "within_one_tier_pct": 70.43
+      },
+      "raw_cams": {
+        "exact_accuracy_pct": 23.93,
+        "within_one_tier_pct": 66.59
+      },
+      "persistence": {
+        "exact_accuracy_pct": 41.79,
+        "within_one_tier_pct": 77.31
+      },
+      "climatology": {
+        "exact_accuracy_pct": 30.84,
+        "within_one_tier_pct": 67.95
+      },
+      "cams_bc": {
+        "exact_accuracy_pct": 45.98,
+        "within_one_tier_pct": 86.46
+      },
+      "lead_blend": {
+        "exact_accuracy_pct": 45.65,
+        "within_one_tier_pct": 83.34
+      }
+    },
+    "25-48h": {
+      "valid_hours": 7858,
+      "model": {
+        "exact_accuracy_pct": 31.57,
+        "within_one_tier_pct": 70.6
+      },
+      "raw_cams": {
+        "exact_accuracy_pct": 23.9,
+        "within_one_tier_pct": 66.42
+      },
+      "persistence": {
+        "exact_accuracy_pct": 36.63,
+        "within_one_tier_pct": 73.64
+      },
+      "climatology": {
+        "exact_accuracy_pct": 30.92,
+        "within_one_tier_pct": 68.08
+      },
+      "cams_bc": {
+        "exact_accuracy_pct": 44.48,
+        "within_one_tier_pct": 85.34
+      },
+      "lead_blend": {
+        "exact_accuracy_pct": 44.44,
+        "within_one_tier_pct": 83.66
+      }
+    },
+    "49-72h": {
+      "valid_hours": 7881,
+      "model": {
+        "exact_accuracy_pct": 31.89,
+        "within_one_tier_pct": 70.61
+      },
+      "raw_cams": {
+        "exact_accuracy_pct": 23.77,
+        "within_one_tier_pct": 66.13
+      },
+      "persistence": {
+        "exact_accuracy_pct": 35.14,
+        "within_one_tier_pct": 71.36
+      },
+      "climatology": {
+        "exact_accuracy_pct": 31.04,
+        "within_one_tier_pct": 68.39
+      },
+      "cams_bc": {
+        "exact_accuracy_pct": 43.74,
+        "within_one_tier_pct": 84.96
+      },
+      "lead_blend": {
+        "exact_accuracy_pct": 42.86,
+        "within_one_tier_pct": 84.56
+      }
+    },
+    "1-72h": {
+      "valid_hours": 23559,
+      "model": {
+        "exact_accuracy_pct": 31.69,
+        "within_one_tier_pct": 70.55
+      },
+      "raw_cams": {
+        "exact_accuracy_pct": 23.86,
+        "within_one_tier_pct": 66.38
+      },
+      "persistence": {
+        "exact_accuracy_pct": 37.88,
+        "within_one_tier_pct": 74.12
+      },
+      "climatology": {
+        "exact_accuracy_pct": 30.94,
+        "within_one_tier_pct": 68.14
+      },
+      "cams_bc": {
+        "exact_accuracy_pct": 44.73,
+        "within_one_tier_pct": 85.59
+      },
+      "lead_blend": {
+        "exact_accuracy_pct": 44.31,
+        "within_one_tier_pct": 83.85
+      }
+    }
+  },
+  "severe_risk": {
+    "1-24h": {
+      "n_samples": 7820,
+      "severe_events": 1788,
+      "brier_score_raw": 0.251,
+      "brier_score_calibrated": 0.3493,
+      "brier_score_climatology": 0.1994,
+      "brier_score_persistence": 0.284,
+      "brier_score_raw_cams": 0.2285,
+      "bss_raw_vs_climatology": -0.2592,
+      "bss_raw_vs_persistence": 0.1161,
+      "bss_cal_vs_climatology": -0.7521,
+      "bss_cal_vs_persistence": -0.23,
+      "reliability": [
+        {
+          "bin_range": "[0.0, 0.2]",
+          "count": 3865,
+          "mean_predicted": 0.0401,
+          "observed_fraction": 0.1201
+        },
+        {
+          "bin_range": "[0.2, 0.4]",
+          "count": 4,
+          "mean_predicted": 0.299,
+          "observed_fraction": 0.5
+        },
+        {
+          "bin_range": "[0.4, 0.6]",
+          "count": 361,
+          "mean_predicted": 0.4052,
+          "observed_fraction": 0.2798
+        },
+        {
+          "bin_range": "[0.6, 0.8]",
+          "count": 4,
+          "mean_predicted": 0.6807,
+          "observed_fraction": 0.25
+        },
+        {
+          "bin_range": "[0.8, 1.0]",
+          "count": 3586,
+          "mean_predicted": 0.9726,
+          "observed_fraction": 0.3402
+        }
+      ]
+    },
+    "25-48h": {
+      "n_samples": 7858,
+      "severe_events": 1800,
+      "brier_score_raw": 0.2551,
+      "brier_score_calibrated": 0.3533,
+      "brier_score_climatology": 0.1995,
+      "brier_score_persistence": 0.3095,
+      "brier_score_raw_cams": 0.2298,
+      "bss_raw_vs_climatology": -0.2788,
+      "bss_raw_vs_persistence": 0.1758,
+      "bss_cal_vs_climatology": -0.7709,
+      "bss_cal_vs_persistence": -0.1414,
+      "reliability": [
+        {
+          "bin_range": "[0.0, 0.2]",
+          "count": 3893,
+          "mean_predicted": 0.0394,
+          "observed_fraction": 0.1246
+        },
+        {
+          "bin_range": "[0.2, 0.4]",
+          "count": 3,
+          "mean_predicted": 0.3069,
+          "observed_fraction": 0.0
+        },
+        {
+          "bin_range": "[0.4, 0.6]",
+          "count": 367,
+          "mean_predicted": 0.4027,
+          "observed_fraction": 0.2752
+        },
+        {
+          "bin_range": "[0.6, 0.8]",
+          "count": 14,
+          "mean_predicted": 0.7003,
+          "observed_fraction": 0.2143
+        },
+        {
+          "bin_range": "[0.8, 1.0]",
+          "count": 3581,
+          "mean_predicted": 0.9743,
+          "observed_fraction": 0.3382
+        }
+      ]
+    },
+    "49-72h": {
+      "n_samples": 7881,
+      "severe_events": 1820,
+      "brier_score_raw": 0.2565,
+      "brier_score_calibrated": 0.3573,
+      "brier_score_climatology": 0.1999,
+      "brier_score_persistence": 0.3322,
+      "brier_score_raw_cams": 0.2317,
+      "bss_raw_vs_climatology": -0.2828,
+      "bss_raw_vs_persistence": 0.2279,
+      "bss_cal_vs_climatology": -0.787,
+      "bss_cal_vs_persistence": -0.0755,
+      "reliability": [
+        {
+          "bin_range": "[0.0, 0.2]",
+          "count": 3867,
+          "mean_predicted": 0.0403,
+          "observed_fraction": 0.129
+        },
+        {
+          "bin_range": "[0.2, 0.4]",
+          "count": 5,
+          "mean_predicted": 0.3182,
+          "observed_fraction": 0.0
+        },
+        {
+          "bin_range": "[0.4, 0.6]",
+          "count": 345,
+          "mean_predicted": 0.4031,
+          "observed_fraction": 0.2493
+        },
+        {
+          "bin_range": "[0.6, 0.8]",
+          "count": 18,
+          "mean_predicted": 0.7136,
+          "observed_fraction": 0.3333
+        },
+        {
+          "bin_range": "[0.8, 1.0]",
+          "count": 3646,
+          "mean_predicted": 0.9726,
+          "observed_fraction": 0.3371
+        }
+      ]
+    },
+    "1-72h": {
+      "n_samples": 23559,
+      "severe_events": 5408,
+      "brier_score_raw": 0.2542,
+      "brier_score_calibrated": 0.3533,
+      "brier_score_climatology": 0.1996,
+      "brier_score_persistence": 0.3086,
+      "brier_score_raw_cams": 0.23,
+      "bss_raw_vs_climatology": -0.2736,
+      "bss_raw_vs_persistence": 0.1763,
+      "bss_cal_vs_climatology": -0.7701,
+      "bss_cal_vs_persistence": -0.1447,
+      "reliability": [
+        {
+          "bin_range": "[0.0, 0.2]",
+          "count": 11625,
+          "mean_predicted": 0.0399,
+          "observed_fraction": 0.1246
+        },
+        {
+          "bin_range": "[0.2, 0.4]",
+          "count": 12,
+          "mean_predicted": 0.309,
+          "observed_fraction": 0.1667
+        },
+        {
+          "bin_range": "[0.4, 0.6]",
+          "count": 1073,
+          "mean_predicted": 0.4037,
+          "observed_fraction": 0.2684
+        },
+        {
+          "bin_range": "[0.6, 0.8]",
+          "count": 36,
+          "mean_predicted": 0.7047,
+          "observed_fraction": 0.2778
+        },
+        {
+          "bin_range": "[0.8, 1.0]",
+          "count": 10813,
+          "mean_predicted": 0.9732,
+          "observed_fraction": 0.3385
+        }
+      ]
+    }
+  }
+}

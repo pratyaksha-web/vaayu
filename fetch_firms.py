@@ -17,7 +17,7 @@ from pathlib import Path
 import re
 import sys
 import time
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional, Sequence, Tuple, Union
 import urllib.error
 import urllib.request
 
