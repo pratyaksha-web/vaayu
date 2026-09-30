@@ -96,6 +96,9 @@ Held-out winter evaluation (October 1, 2025 – February 28, 2026; 23,559 valid 
 
 Detailed per-bucket metrics (1–24h, 25–48h, 49–72h), Brier skill scores vs persistence, and prediction interval coverage (p10–p90) are documented in [`docs/verification.md`](docs/verification.md) and [`docs/verification.json`](docs/verification.json).
 
+> **P(Severe) Risk Indicator:** P(Severe) probabilities at 24h, 48h, and 72h are output in `data/forecast.json` as an **uncalibrated risk indicator** derived from the bias-corrected PM forecast and empirical residual spread. No forecasting skill is claimed over climatology.
+
+
 ---
 
 ## Quick start

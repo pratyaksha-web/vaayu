@@ -529,3 +529,21 @@ def test_multi_winter_audit_structure():
                 assert "missing_hours" in st_data[p]
                 assert st_data[p]["valid_hours"] + st_data[p]["missing_hours"] == audit[w_name]["calendar_hours"]
 
+
+# ==============================================================================
+# 12. Uncalibrated Risk Indicator & Default Blend Output Tests
+# ==============================================================================
+
+def test_forecast_json_uncalibrated_risk_label():
+    """Verify that forecast.json includes uncalibrated risk indicator labeling."""
+    assert FORECAST_JSON_PATH.exists()
+    with open(FORECAST_JSON_PATH, "r", encoding="utf-8") as f:
+        data = json.load(f)
+
+    assert data.get("p_severe_type") == "uncalibrated risk indicator"
+    assert "uncalibrated" in data.get("p_severe_disclosure", "").lower()
+    for st in data["stations"]:
+        assert st.get("p_severe_type") == "uncalibrated risk indicator"
+        assert "experimental, single-station" in st.get("o3_no2_label", "").lower()
+
+
