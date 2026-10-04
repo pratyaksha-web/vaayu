@@ -106,7 +106,7 @@ Detailed per-bucket metrics (1–24h, 25–48h, 49–72h), Brier skill scores vs
 ### 1. Installation
 
 ```bash
-git clone https://github.com/PamdaPJ/vaayu.git
+git clone https://github.com/pratyaksha-web/vaayu.git
 cd vaayu
 python -m venv .venv
 # Activate virtual environment:
